@@ -1,0 +1,64 @@
+name: '1b-aws-ireland'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+env: 
+  WORKING_DIR: /1b-aws-ireland
+
+permissions:
+  contents: read
+
+## JOBS ##
+
+jobs:
+  terraform:
+    name: '1b-aws-ireland'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: $WORKING_DIR
+        shell: bash
+## STEPS ##
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ vars.TF_VERSION }}
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      run: terraform init
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: terraform plan -input=false
+
+    - name: Manual Approval
+      uses: trstringer/manual-approval@v1
+      with:
+        secret: ${{ github.TOKEN }}
+        approvers: user1,user2,org-team1
+        minimum-approvals: 1
+        issue-title: "Waiting for Approval"
+        issue-body: "Please approve or deny the deployment."
+        exclude-workflow-initiator-as-approver: false
+        additional-approved-words: ''
+        additional-denied-words: ''
+
+      # On push to "main", build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply
+      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false
