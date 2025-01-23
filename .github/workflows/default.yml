@@ -70,6 +70,7 @@ jobs:
     - name: Terraform Apply
       id: apply
       working-directory: ./2a-ibm-frankfurt
+      continue-on-error: true
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
@@ -136,6 +137,7 @@ jobs:
     - name: Terraform Apply
       id: apply
       working-directory: ./1b-aws-ireland
+      continue-on-error: true
       run: terraform apply -auto-approve -input=false
 
     - name: Output
@@ -201,6 +203,7 @@ jobs:
     - name: Terraform Apply
       id: apply
       working-directory: ./1a-aws-frankfurt
+      continue-on-error: true
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
