@@ -182,16 +182,16 @@ jobs:
     - name: Terraform Apply
       id: apply
       working-directory: ./1a-aws-frankfurt
-      continue-on-error: true
+      #continue-on-error: true
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
-    - name: Forced Failure
-      if: steps.apply.outcome == 'failure'
-      uses: actions/github-script@v3
-      with:
-        script: |
-            core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
+    # - name: Forced Failure
+    #   if: steps.apply.outcome == 'failure'
+    #   uses: actions/github-script@v3
+    #   with:
+    #     script: |
+    #         core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
 
   job0:
     name: '0-global-services'    
