@@ -224,9 +224,12 @@ jobs:
       if: steps.apply.outcome == 'failure'
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: echo "value=1" >> "$GITHUB_OUTPUT"
+      with:
+        script: |
+            core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
 
     - name: Failure Check
-      if: steps.apply.outcome == 'failure'
+      if: steps.apply.outcome == 'success'
       uses: actions/github-script@v3
       with:
         script: |
