@@ -17,7 +17,7 @@ jobs:
   job2a:
     name: '2a-ibm-frankfurt'
     outputs:
-      exitcode: ${{ steps.xkqsh1.outputs.exitcode }}
+      exitcode: ${{ steps.exitcode.outputs.value }}
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -74,16 +74,23 @@ jobs:
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
-    - name: Output
-      id: xkqsh1
+    - name: Generate Output Values
+      id: exitcode
       if: steps.apply.outcome == 'failure'
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: echo "exitcode=1" >> "$GITHUB_OUTPUT"
+      run: echo "value=1" >> "$GITHUB_OUTPUT"
+
+    - name: Failure Check
+      if: steps.apply.outcome == 'failure'
+      uses: actions/github-script@v3
+      with:
+        script: |
+            core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
 
   job1b:
     name: '1b-aws-ireland'
     outputs:
-      exitcode: ${{ steps.xkqsh1.outputs.exitcode }}
+      exitcode: ${{ steps.exitcode.outputs.value }}
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -116,7 +123,6 @@ jobs:
         terraform_version: ${{ vars.TF_VERSION }}
         terraform_wrapper: false
 
-
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./1b-aws-ireland
@@ -140,16 +146,23 @@ jobs:
       continue-on-error: true
       run: terraform apply -auto-approve -input=false
 
-    - name: Output
-      id: xkqsh1
+    - name: Generate Output Values
+      id: exitcode
       if: steps.apply.outcome == 'failure'
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: echo "exitcode=1" >> "$GITHUB_OUTPUT"
+      run: echo "value=1" >> "$GITHUB_OUTPUT"
+
+    - name: Failure Check
+      if: steps.apply.outcome == 'failure'
+      uses: actions/github-script@v3
+      with:
+        script: |
+            core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
 
   job1a:
     name: '1a-aws-frankfurt'
     outputs:
-      exitcode: ${{ steps.xkqsh1.outputs.exitcode }}
+      exitcode: ${{ steps.exitcode.outputs.value }}
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -182,7 +195,6 @@ jobs:
         terraform_version: ${{ vars.TF_VERSION }}
         terraform_wrapper: false
 
-
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./1a-aws-frankfurt
@@ -207,11 +219,18 @@ jobs:
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
-    - name: Output
-      id: xkqsh1
+    - name: Generate Output Values
+      id: exitcode
       if: steps.apply.outcome == 'failure'
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: echo "exitcode=1" >> "$GITHUB_OUTPUT"
+      run: echo "value=1" >> "$GITHUB_OUTPUT"
+
+    - name: Failure Check
+      if: steps.apply.outcome == 'failure'
+      uses: actions/github-script@v3
+      with:
+        script: |
+            core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
 
   job0:
     name: '0-global-services'    
