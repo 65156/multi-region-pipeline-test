@@ -19,14 +19,16 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: $WORKING_DIR
         shell: bash
+
 ## STEPS ##
     steps:
+    - uses: actions/checkout@v4
     # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v4
 
+    - name: Set Working Directory
+      run: cd $WORKING_DIR
+      
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3

@@ -7,7 +7,7 @@ on:
           - completed
 
 env: 
-  WORKING_DIR: "0-global-services"
+  WORKING_DIR: ./0-global-services
   AUTH_KEY: ${{ secrets.AUTH_KEY }}
   REGION: us-east
   TF_VERSION: ${{ vars.TF_VERSION }}
@@ -24,14 +24,16 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: $WORKING_DIR
         shell: bash
+
 ## STEPS ##
     steps:
+    - uses: actions/checkout@v4
     # Checkout the repository to the GitHub Actions runner
-    - name: Checkout
-      uses: actions/checkout@v4
 
+    - name: Set Working Directory
+      run: cd $WORKING_DIR
+      
     # Download and Install IBM Cloud CLI
     - name: Install IBM Cloud CLI
       run: |
