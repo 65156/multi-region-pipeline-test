@@ -223,7 +223,10 @@ jobs:
       id: exitcode
       if: steps.apply.outcome == 'failure'
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: echo "value=1" >> "$GITHUB_OUTPUT"
+      run: |
+            echo "value=1" >> "$GITHUB_OUTPUT"
+            core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
+            
 
     - name: Failure Check
       if: steps.apply.outcome == 'failure'
