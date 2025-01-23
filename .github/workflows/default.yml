@@ -16,8 +16,6 @@ permissions:
 jobs:
   job2a:
     name: '2a-ibm-frankfurt'
-    outputs:
-      exitcode: ${{ steps.exitcode.outputs.value }}
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -74,12 +72,6 @@ jobs:
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
-    - name: Create Outputs
-      id: exitcode
-      if: steps.apply.outcome == 'failure'
-      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: echo "value=1" >> "$GITHUB_OUTPUT"
-
     - name: Forced Failure
       if: steps.apply.outcome == 'failure'
       uses: actions/github-script@v3
@@ -89,8 +81,6 @@ jobs:
 
   job1b:
     name: '1b-aws-ireland'
-    outputs:
-      exitcode: ${{ steps.exitcode.outputs.value }}
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -146,12 +136,6 @@ jobs:
       continue-on-error: true
       run: terraform apply -auto-approve -input=false
 
-    - name: Create Outputs
-      id: exitcode
-      if: steps.apply.outcome == 'failure'
-      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: echo "value=1" >> "$GITHUB_OUTPUT"
-
     - name: Forced Failure
       if: steps.apply.outcome == 'failure'
       uses: actions/github-script@v3
@@ -161,8 +145,6 @@ jobs:
 
   job1a:
     name: '1a-aws-frankfurt'
-    outputs:
-      exitcode: ${{ steps.exitcode.outputs.value }}
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -218,12 +200,6 @@ jobs:
       continue-on-error: true
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
-
-    - name: Create Outputs
-      id: exitcode
-      if: steps.apply.outcome == 'failure'
-      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: echo "value=1" >> "$GITHUB_OUTPUT"
 
     - name: Forced Failure
       if: steps.apply.outcome == 'failure'
