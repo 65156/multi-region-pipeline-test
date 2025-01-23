@@ -7,7 +7,7 @@ on:
           - completed
 
 env: 
-  WORKING_DIR: /0-global-services
+  WORKING_DIR: 0-global-services
   AUTH_KEY: ${{ secrets.AUTH_KEY }}
   REGION: us-east
   TF_VERSION: ${{ vars.TF_VERSION }}
