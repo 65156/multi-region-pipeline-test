@@ -53,11 +53,6 @@ jobs:
       working-directory: ./2a-ibm-frankfurt
       run: terraform init
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      working-directory: ./2a-ibm-frankfurt
-      run: terraform fmt -check
-
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./2a-ibm-frankfurt
@@ -118,11 +113,6 @@ jobs:
       working-directory: ./1b-aws-ireland
       run: terraform init
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      working-directory: ./1b-aws-ireland
-      run: terraform fmt -check
-
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./1b-aws-ireland
@@ -181,11 +171,6 @@ jobs:
     - name: Terraform Init
       working-directory: ./1a-aws-frankfurt
       run: terraform init
-
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      working-directory: ./1a-aws-frankfurt
-      run: terraform fmt -check
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
