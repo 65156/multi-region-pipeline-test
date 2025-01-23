@@ -16,6 +16,8 @@ permissions:
 jobs:
   job2a:
     name: '2a-ibm-frankfurt'
+    outputs:
+      exitcode: ${{ steps.xkqsh1.outputs.exitcode }}
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -71,11 +73,16 @@ jobs:
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
-    -  outputs:
-        should_deploy: ${{ steps.apply.outputs.exitcode }}
+    - name: Output
+      id: xkqsh1
+      if: steps.apply.outcome == 'success'
+      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+      run: echo "exitcode=0" >> "$GITHUB_OUTPUT"
 
   job1b:
     name: '1b-aws-ireland'
+    outputs:
+      exitcode: ${{ steps.xkqsh1.outputs.exitcode }}
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -129,8 +136,17 @@ jobs:
     - name: Terraform Apply
       working-directory: ./1b-aws-ireland
       run: terraform apply -auto-approve -input=false
+
+    - name: Output
+      id: xkqsh1
+      if: steps.apply.outcome == 'success'
+      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+      run: echo "exitcode=0" >> "$GITHUB_OUTPUT"
+
   job1a:
     name: '1a-aws-frankfurt'
+    outputs:
+      exitcode: ${{ steps.xkqsh1.outputs.exitcode }}
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -182,12 +198,20 @@ jobs:
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
+      id: apply
       working-directory: ./1a-aws-frankfurt
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
+
+    - name: Output
+      id: xkqsh1
+      if: steps.apply.outcome == 'success'
+      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+      run: echo "exitcode=0" >> "$GITHUB_OUTPUT"
+
   job0:
     name: '0-global-services'    
-    if: needs.job1a.outputs.exitcode != '1' && needs.job1b.outputs.exitcode != '1' && needs.job2a.outputs.exitcode != '1'
+    if: needs.job1a.outputs.exitcode != '0' && needs.job1b.outputs.exitcode != '0' && needs.job2a.outputs.exitcode != '0'
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
