@@ -44,10 +44,8 @@ jobs:
     # Authenticate with IBM Cloud CLI
     - name: Authenticate with IBM Cloud CLI
       run: |
-        ibmcloud target -g default
         ibmcloud login --apikey "${AUTH_KEY}" -r "${REGION}" -g default 
-        ibmcloud cr region-set "${REGION}"
-        ibmcloud cr login
+        ibmcloud target -g default
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
