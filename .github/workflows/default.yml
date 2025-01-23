@@ -74,13 +74,13 @@ jobs:
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
-    - name: Generate Output Values
+    - name: Create Outputs
       id: exitcode
       if: steps.apply.outcome == 'failure'
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: echo "value=1" >> "$GITHUB_OUTPUT"
 
-    - name: Failure Check
+    - name: Forced Failure
       if: steps.apply.outcome == 'failure'
       uses: actions/github-script@v3
       with:
@@ -146,13 +146,13 @@ jobs:
       continue-on-error: true
       run: terraform apply -auto-approve -input=false
 
-    - name: Generate Output Values
+    - name: Create Outputs
       id: exitcode
       if: steps.apply.outcome == 'failure'
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: echo "value=1" >> "$GITHUB_OUTPUT"
 
-    - name: Failure Check
+    - name: Forced Failure
       if: steps.apply.outcome == 'failure'
       uses: actions/github-script@v3
       with:
@@ -219,16 +219,13 @@ jobs:
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
 
-    - name: Generate Output Values
+    - name: Create Outputs
       id: exitcode
       if: steps.apply.outcome == 'failure'
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: |
-            echo "value=1" >> "$GITHUB_OUTPUT"
-            core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
-            
+      run: echo "value=1" >> "$GITHUB_OUTPUT"
 
-    - name: Failure Check
+    - name: Forced Failure
       if: steps.apply.outcome == 'failure'
       uses: actions/github-script@v3
       with:
