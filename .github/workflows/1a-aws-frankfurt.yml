@@ -7,6 +7,11 @@ on:
 
 env: 
   WORKING_DIR: ./1a-aws-frankfurt
+  AUTH_KEY: ${{ secrets.AUTH_KEY }}
+  REGION: us-east
+  TF_VERSION: ${{ vars.TF_VERSION }}
+  GITHUB TOKEN: ${{ github.TOKEN }}
+  RESOURCE_GROUP: Default-DO-NOT-USE
 
 permissions:
   contents: read
@@ -28,7 +33,19 @@ jobs:
 
     - name: Set Working Directory
       run: cd $WORKING_DIR
-      
+
+    # Download and Install IBM Cloud CLI
+    - name: Install IBM Cloud CLI
+      run: |
+        curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+        ibmcloud --version
+        ibmcloud config --check-version=false
+
+    # Authenticate with IBM Cloud CLI
+    - name: Authenticate with IBM Cloud CLI
+      run: |
+        ibmcloud login --apikey "${AUTH_KEY}" -r "${REGION}" -g "${RESOURCE_GROUP}"  
+
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
