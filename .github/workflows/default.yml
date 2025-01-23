@@ -211,7 +211,7 @@ jobs:
 
   job0:
     name: '0-global-services'    
-    if: needs.job1a.outputs.exitcode != '0' && needs.job1b.outputs.exitcode != '0' && needs.job2a.outputs.exitcode != '0'
+    if: needs.job1a.outputs.exitcode == '0' && needs.job1b.outputs.exitcode == '0' && needs.job2a.outputs.exitcode == '0'
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
