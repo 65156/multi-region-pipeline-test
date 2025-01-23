@@ -63,16 +63,8 @@ jobs:
     - name: Terraform Apply
       id: apply
       working-directory: ./2a-ibm-frankfurt
-      continue-on-error: true
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
-
-    - name: Forced Failure
-      if: steps.apply.outcome == 'failure'
-      uses: actions/github-script@v3
-      with:
-        script: |
-            core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
 
   job1b:
     name: '1b-aws-ireland'
@@ -123,15 +115,7 @@ jobs:
     - name: Terraform Apply
       id: apply
       working-directory: ./1b-aws-ireland
-      continue-on-error: true
       run: terraform apply -auto-approve -input=false
-
-    - name: Forced Failure
-      if: steps.apply.outcome == 'failure'
-      uses: actions/github-script@v3
-      with:
-        script: |
-            core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
 
   job1a:
     name: '1a-aws-frankfurt'
