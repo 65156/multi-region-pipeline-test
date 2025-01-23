@@ -46,6 +46,7 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ vars.TF_VERSION }}
+        terraform_wrapper: false
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -65,9 +66,14 @@ jobs:
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
+      id: apply
       working-directory: ./2a-ibm-frankfurt
       #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
+
+    -  outputs:
+        should_deploy: ${{ steps.apply.outputs.exitcode }}
+
   job1b:
     name: '1b-aws-ireland'
     env:
@@ -100,6 +106,8 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ vars.TF_VERSION }}
+        terraform_wrapper: false
+
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -153,6 +161,8 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: ${{ vars.TF_VERSION }}
+        terraform_wrapper: false
+
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -177,6 +187,7 @@ jobs:
       run: terraform apply -auto-approve -input=false
   job0:
     name: '0-global-services'    
+    if: needs.job1a.outputs.exitcode != '1' && needs.job1b.outputs.exitcode != '1' && needs.job2a.outputs.exitcode != '1'
     env:
       RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
@@ -208,6 +219,8 @@ jobs:
       uses: hashicorp/setup-terraform@v3
       with:
         terraform_version: $TF_VERSION
+        terraform_wrapper: false
+
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
