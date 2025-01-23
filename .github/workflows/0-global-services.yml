@@ -8,6 +8,10 @@ on:
 
 env: 
   WORKING_DIR: /0-global-services
+  AUTH_KEY: ${{ secrets.AUTH_KEY }}
+  REGION: us-east
+  TF_VERSION: ${{ vars.TF_VERSION }}
+  GITHUB TOKEN: ${{ github.TOKEN }}
 
 permissions:
   contents: read
@@ -28,11 +32,25 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    # Download and Install IBM Cloud CLI
+    - name: Install IBM Cloud CLI
+      run: |
+        curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+        ibmcloud --version
+        ibmcloud config --check-version=false
+
+    # Authenticate with IBM Cloud CLI
+    - name: Authenticate with IBM Cloud CLI
+      run: |
+        ibmcloud login --apikey "${AUTH_KEY}" -r "${REGION}" -g default
+        ibmcloud cr region-set "${REGION}"
+        ibmcloud cr login
+
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
       with:
-        terraform_version: ${{ vars.TF_VERSION }}
+        terraform_version: $TF_VERSION
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
@@ -49,7 +67,7 @@ jobs:
     - name: Manual Approval
       uses: trstringer/manual-approval@v1
       with:
-        secret: ${{ github.TOKEN }}
+        secret: $GITHUB_TOKEN
         approvers: user1,user2,org-team1
         minimum-approvals: 1
         issue-title: "Waiting for Approval"
