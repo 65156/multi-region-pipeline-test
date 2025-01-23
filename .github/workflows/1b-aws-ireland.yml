@@ -64,18 +64,6 @@ jobs:
       working-directory: ./1b-aws-ireland
       run: terraform plan -input=false
 
-    - name: Manual Approval
-      uses: trstringer/manual-approval@v1
-      with:
-        secret: ${{ github.TOKEN }}
-        approvers: user1,user2,org-team1
-        minimum-approvals: 1
-        issue-title: "Waiting for Approval"
-        issue-body: "Please approve or deny the deployment."
-        exclude-workflow-initiator-as-approver: false
-        additional-approved-words: ''
-        additional-denied-words: ''
-
       # On push to "main", build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
