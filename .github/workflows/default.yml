@@ -1,4 +1,4 @@
-name: 'combined'
+name: 'Default Pipeline'
 
 on:
   push:
