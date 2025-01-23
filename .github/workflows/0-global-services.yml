@@ -6,21 +6,21 @@ on:
         types:
           - completed
 
+env: 
+  WORKING_DIR: ./0-global-services
+  AUTH_KEY: ${{ secrets.AUTH_KEY }}
+  REGION: us-east
+  TF_VERSION: ${{ vars.TF_VERSION }}
+  GITHUB TOKEN: ${{ github.TOKEN }}
+  RESOURCE_GROUP: Default-DO-NOT-USE
+
 permissions:
   contents: read
 
 ## JOBS ##
-
 jobs:
   terraform:
-    name: '0-global-services' 
-    env: 
-      WORKING_DIR: ./0-global-services
-      AUTH_KEY: ${{ secrets.AUTH_KEY }}
-      REGION: us-east
-      TF_VERSION: ${{ vars.TF_VERSION }}
-      GITHUB TOKEN: ${{ github.TOKEN }}
-      RESOURCE_GROUP: Default-DO-NOT-USE  
+    name: '0-global-services'    
     runs-on: ubuntu-latest
     defaults:
       run:
