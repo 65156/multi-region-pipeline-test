@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env: 
-  WORKING_DIR: ./2a-ibm-frankfurt
+  WORKING_DIR: ./${{ github.workflow }}
   AUTH_KEY: ${{ secrets.AUTH_KEY }}
   REGION: us-east
   TF_VERSION: ${{ vars.TF_VERSION }}
@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   terraform:
-    name: '2a-ibm-frankfurt'
+    name: '${{ github.workflow }}'
     runs-on: ubuntu-latest
     defaults:
       run:
