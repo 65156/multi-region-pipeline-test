@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env: 
-  WORKING_DIR: /1a-aws-frankfurt
+  WORKING_DIR: ./1a-aws-frankfurt
 
 permissions:
   contents: read

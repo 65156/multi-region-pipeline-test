@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env: 
-  WORKING_DIR: /2a-ibm-frankfurt
+  WORKING_DIR: ./2a-ibm-frankfurt
 
 permissions:
   contents: read

@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env: 
-  WORKING_DIR: /1b-aws-ireland
+  WORKING_DIR: ./1b-aws-ireland
 
 permissions:
   contents: read
