@@ -6,7 +6,7 @@ on:
   pull_request:
 
 env: 
-  WORKING_DIR: ./${{ github.workflow }}
+  WORKING_DIR: ./2a-ibm-frankfurt
   AUTH_KEY: ${{ secrets.AUTH_KEY }}
   REGION: us-east
   TF_VERSION: ${{ vars.TF_VERSION }}

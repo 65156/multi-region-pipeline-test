@@ -1,3 +1,3 @@
 resource "ibm_resource_group" "test" {
-  name     = "test0"
+  name = "test0"
 }
