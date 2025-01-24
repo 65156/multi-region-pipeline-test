@@ -8,6 +8,6 @@ terraform {
 }
 
 provider "ibm" {
-  region           = "us-east"
-  ibmcloud_api_key = var.AUTH_KEY
+  region           = var.IBMC_DEFAULT_REGION
+  ibmcloud_api_key = var.IBMC_AUTH_KEY
 }

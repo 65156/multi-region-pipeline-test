@@ -171,8 +171,11 @@ jobs:
     name: 'global-services (0)'    
     needs: [job1a,job1b,job2a]    
     env:
-      IBM_DEFAULT_REGION: eu-de
+      TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
+      IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
+      IBMC_DEFAULT_REGION: eu-de
       AWS_DEFAULT_REGION: eu-central-1
+      #TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -182,6 +185,15 @@ jobs:
     steps:
     # Checkout the repository to the GitHub Actions runner
     - uses: actions/checkout@v4
+
+    # Download and Install AWS Cloud CLI
+    # - name: Install AWS CLI
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
     # Download and Install IBM Cloud CLI
     - name: Install IBM Cloud CLI
@@ -193,7 +205,8 @@ jobs:
     # Authenticate with IBM Cloud CLI
     - name: Authenticate with IBM Cloud CLI
       run: |
-        ibmcloud login --apikey "${IBMC_AUTH_KEY}" -r "${IBM_DEFAULT_REGION}" -g "${IBMC_RESOURCE_GROUP}"  
+        ibmcloud login --apikey "${IBMC_AUTH_KEY}" -r "${IBMC_DEFAULT_REGION}" -g "${IBMC_RESOURCE_GROUP}"  
+
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
