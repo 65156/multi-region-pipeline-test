@@ -119,7 +119,7 @@ jobs:
     name: 'ibm-frankfurt (2a)'
     env:
       REGION: us-east
-      TF_VAR_AUTH_KEY: $IBMC_AUTH_KEY
+      TF_VAR_AUTH_KEY: ${{ env.IBMC_AUTH_KEY }}
     runs-on: ubuntu-latest
     defaults:
       run:
