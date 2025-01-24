@@ -9,7 +9,7 @@ env:
   TF_VERSION: ${{ vars.TF_VERSION }}
   GITHUB TOKEN: ${{ github.TOKEN }}
   ## IBM
-  IBMC_AUTH_KEY: ${{ secrets.IBM_AUTH_KEY }}
+  IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
   IBMC_RESOURCE_GROUP: Default-DO-NOT-USE
   ## AWS
   AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
