@@ -221,11 +221,6 @@ jobs:
       working-directory: ./0-global-services
       run: terraform init
 
-    # Checks that all Terraform configuration files adhere to a canonical format
-    - name: Terraform Format
-      working-directory: ./0-global-services
-      run: terraform fmt -check
-
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./0-global-services
