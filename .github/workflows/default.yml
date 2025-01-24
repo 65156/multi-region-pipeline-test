@@ -120,6 +120,7 @@ jobs:
     env:
       REGION: eu-de
       TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
+      IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
     runs-on: ubuntu-latest
     defaults:
       run:
