@@ -4,6 +4,6 @@ resource "null_resource" "example" {
     always_run = timestamp()
   }
   provisioner "local-exec" {
-    command = "This is a test resource - 1b"
+    command = "echo This is a test resource - 1b"
   }
 }
