@@ -23,7 +23,7 @@ jobs:
   job1a:
     name: 'aws-frankfurt (1a)'
     env:
-      REGION: us-east
+      REGION: eu-central-1
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -35,6 +35,12 @@ jobs:
 
     # Download and Install AWS Cloud CLI
     # - name: Install AWS CLI
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: $REGION
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -72,7 +78,7 @@ jobs:
   job1b:
     name: 'aws-ireland (1b)'
     env:
-      REGION: us-east
+      REGION: eu-west-1
     runs-on: ubuntu-latest
     defaults:
       run:
