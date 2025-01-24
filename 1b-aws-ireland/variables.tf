@@ -1,2 +1,0 @@
-variable "AUTH_KEY" {
-}
