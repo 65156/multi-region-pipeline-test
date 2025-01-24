@@ -21,7 +21,7 @@ permissions:
 ## JOBS ##
 jobs:
   job0:
-    name: '0-global-services'    
+    name: 'global-services'    
     needs: [job1a,job1b,job2a]    
     env:
       IBM_DEFAULT_REGION: us-east
@@ -90,7 +90,7 @@ jobs:
       run: terraform apply -auto-approve -input=false
 
   job1a:
-    name: '1a-aws-frankfurt'
+    name: 'aws-frankfurt'
     env:
       REGION: us-east
     runs-on: ubuntu-latest
@@ -139,7 +139,7 @@ jobs:
     #         core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
 
   job1b:
-    name: '1b-aws-ireland'
+    name: 'aws-ireland'
     env:
       REGION: us-east
     runs-on: ubuntu-latest
@@ -179,7 +179,7 @@ jobs:
       run: terraform apply -auto-approve -input=false
 
   job2a:
-    name: '2a-ibm-frankfurt'
+    name: 'ibm-frankfurt'
     env:
       REGION: us-east
       TF_VAR_AUTH_KEY: $IBMC_AUTH_KEY
