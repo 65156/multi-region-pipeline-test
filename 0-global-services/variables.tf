@@ -1,7 +1,7 @@
 variable "IBMC_AUTH_KEY" {
-    default = ""
+  default = ""
 }
 
 variable "IBMC_DEFAULT_REGION" {
-    default = ""
+  default = ""
 }

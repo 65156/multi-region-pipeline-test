@@ -1,7 +1,7 @@
 variable "AUTH_KEY" {
-    default = ""
+  default = ""
 }
 
 variable "REGION" {
-    default = ""
+  default = ""
 }
