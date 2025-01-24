@@ -8,6 +8,12 @@ on:
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
   GITHUB TOKEN: ${{ github.TOKEN }}
+  ## IBM
+  IBMC_AUTH_KEY: ${{ secrets.IBM_AUTH_KEY }}
+  IBMC_RESOURCE_GROUP: Default-DO-NOT-USE
+  ## AWS
+  AWS_AUTH_KEY: na
+  AWS_AUTH_SECRET: na
 
 permissions:
   contents: read
@@ -17,9 +23,7 @@ jobs:
   job2a:
     name: '2a-ibm-frankfurt'
     env:
-      RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
-      AUTH_KEY: ${{ secrets.AUTH_KEY }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -39,7 +43,7 @@ jobs:
     # Authenticate with IBM Cloud CLI
     - name: Authenticate with IBM Cloud CLI
       run: |
-        ibmcloud login --apikey "${AUTH_KEY}" -r "${REGION}" -g "${RESOURCE_GROUP}"  
+        ibmcloud login --apikey "${IBMC_AUTH_KEY}" -r "${REGION}" -g "${IBMC_RESOURCE_GROUP}"  
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -69,9 +73,7 @@ jobs:
   job1b:
     name: '1b-aws-ireland'
     env:
-      RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
-      AUTH_KEY: ${{ secrets.AUTH_KEY }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -81,18 +83,9 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - uses: actions/checkout@v4
     
-    # Download and Install IBM Cloud CLI
-    - name: Install IBM Cloud CLI
-      run: |
-        curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-        ibmcloud --version
-        ibmcloud config --check-version=false
-
-    # Authenticate with IBM Cloud CLI
-    - name: Authenticate with IBM Cloud CLI
-      run: |
-        ibmcloud login --apikey "${AUTH_KEY}" -r "${REGION}" -g "${RESOURCE_GROUP}"  
-
+    # Download and Install AWS Cloud CLI
+    # - name: Install AWS CLI
+ 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
@@ -120,9 +113,7 @@ jobs:
   job1a:
     name: '1a-aws-frankfurt'
     env:
-      RESOURCE_GROUP: Default-DO-NOT-USE
       REGION: us-east
-      AUTH_KEY: ${{ secrets.AUTH_KEY }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -132,17 +123,8 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - uses: actions/checkout@v4
 
-    # Download and Install IBM Cloud CLI
-    - name: Install IBM Cloud CLI
-      run: |
-        curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-        ibmcloud --version
-        ibmcloud config --check-version=false
-
-    # Authenticate with IBM Cloud CLI
-    - name: Authenticate with IBM Cloud CLI
-      run: |
-        ibmcloud login --apikey "${AUTH_KEY}" -r "${REGION}" -g "${RESOURCE_GROUP}"  
+    # Download and Install AWS Cloud CLI
+    # - name: Install AWS CLI
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
@@ -179,16 +161,7 @@ jobs:
 
   job0:
     name: '0-global-services'    
-    needs: [job1a,job1b,job2a]
-    env:
-      ## IBM
-      IBM_DEFAULT_REGION: us-east
-      IBM_AUTH_KEY: ${{ secrets.IBM_AUTH_KEY }}
-      IBM_RESOURCE_GROUP: Default-DO-NOT-USE
-      ## AWS
-      AWS_DEFAULT_REGION: us-east-2
-      AWS_AUTH_KEY: na
-      AWS_AUTH_SECRET: na
+    needs: [job1a,job1b,job2a]    
     runs-on: ubuntu-latest
     defaults:
       run:
