@@ -8,6 +8,6 @@ resource "null_resource" "example" {
   }
 }
 
-resource "ibm_resource_group" "test" {
-  name     = "test2a"
-}
+# resource "ibm_resource_group" "test" {
+#   name     = "test2a"
+# }
