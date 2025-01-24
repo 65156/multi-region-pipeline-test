@@ -118,7 +118,7 @@ jobs:
   job2a:
     name: 'ibm-frankfurt (2a)'
     env:
-      REGION: us-east
+      REGION: eu-de
       TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
     runs-on: ubuntu-latest
     defaults:
@@ -192,7 +192,7 @@ jobs:
     # Authenticate with IBM Cloud CLI
     - name: Authenticate with IBM Cloud CLI
       run: |
-        ibmcloud login --apikey "${IBMC_AUTH_KEY}" -r "${IBM_REGION}" -g "${IBMC_RESOURCE_GROUP}"  
+        ibmcloud login --apikey "${IBMC_AUTH_KEY}" -r "${IBM_DEFAULT_REGION}" -g "${IBMC_RESOURCE_GROUP}"  
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
     - name: Setup Terraform
