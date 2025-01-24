@@ -20,8 +20,148 @@ permissions:
 
 ## JOBS ##
 jobs:
+  job1a:
+    name: 'aws-frankfurt (1a)'
+    env:
+      REGION: us-east
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+## STEPS ##
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - uses: actions/checkout@v4
+
+    # Download and Install AWS Cloud CLI
+    # - name: Install AWS CLI
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ vars.TF_VERSION }}
+        terraform_wrapper: false
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      working-directory: ./1a-aws-frankfurt
+      run: terraform init
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      working-directory: ./1a-aws-frankfurt
+      run: terraform plan -input=false
+
+      # On push to "main", build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply
+      id: apply
+      working-directory: ./1a-aws-frankfurt
+      #continue-on-error: true
+      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false
+
+    # - name: Forced Failure
+    #   if: steps.apply.outcome == 'failure'
+    #   uses: actions/github-script@v3
+    #   with:
+    #     script: |
+    #         core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
+
+  job1b:
+    name: 'aws-ireland (1b)'
+    env:
+      REGION: us-east
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+## STEPS ##
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - uses: actions/checkout@v4
+    
+    # Download and Install AWS Cloud CLI
+    # - name: Install AWS CLI
+ 
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ vars.TF_VERSION }}
+        terraform_wrapper: false
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      working-directory: ./1b-aws-ireland
+      run: terraform init
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      working-directory: ./1b-aws-ireland
+      run: terraform plan -input=false
+
+      # On push to "main", build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply
+      id: apply
+      working-directory: ./1b-aws-ireland
+      run: terraform apply -auto-approve -input=false
+
+  job2a:
+    name: 'ibm-frankfurt (2a)'
+    env:
+      REGION: us-east
+      TF_VAR_AUTH_KEY: $IBMC_AUTH_KEY
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+## STEPS ##
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - uses: actions/checkout@v4
+
+    # Download and Install IBM Cloud CLI
+    - name: Install IBM Cloud CLI
+      run: |
+        curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+        ibmcloud --version
+        ibmcloud config --check-version=false
+
+    # Authenticate with IBM Cloud CLI
+    - name: Authenticate with IBM Cloud CLI
+      run: |
+        ibmcloud login --apikey "${IBMC_AUTH_KEY}" -r "${REGION}" -g "${IBMC_RESOURCE_GROUP}"  
+
+    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: ${{ vars.TF_VERSION }}
+        terraform_wrapper: false
+
+    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+    - name: Terraform Init
+      working-directory: ./2a-ibm-frankfurt
+      run: terraform init
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      working-directory: ./2a-ibm-frankfurt
+      run: terraform plan -input=false
+
+      # On push to "main", build or change infrastructure according to Terraform configuration files
+      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+    - name: Terraform Apply
+      id: apply
+      working-directory: ./2a-ibm-frankfurt
+      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
+      run: terraform apply -auto-approve -input=false
+
   job0:
-    name: 'global-services'    
+    name: 'global-services (0)'    
     needs: [job1a,job1b,job2a]    
     env:
       IBM_DEFAULT_REGION: us-east
@@ -88,144 +228,3 @@ jobs:
     - name: Terraform Apply
       working-directory: ./0-global-services
       run: terraform apply -auto-approve -input=false
-
-  job1a:
-    name: 'aws-frankfurt'
-    env:
-      REGION: us-east
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-## STEPS ##
-    steps:
-    # Checkout the repository to the GitHub Actions runner
-    - uses: actions/checkout@v4
-
-    # Download and Install AWS Cloud CLI
-    # - name: Install AWS CLI
-
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: ${{ vars.TF_VERSION }}
-        terraform_wrapper: false
-
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      working-directory: ./1a-aws-frankfurt
-      run: terraform init
-
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      working-directory: ./1a-aws-frankfurt
-      run: terraform plan -input=false
-
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      id: apply
-      working-directory: ./1a-aws-frankfurt
-      #continue-on-error: true
-      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
-
-    # - name: Forced Failure
-    #   if: steps.apply.outcome == 'failure'
-    #   uses: actions/github-script@v3
-    #   with:
-    #     script: |
-    #         core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
-
-  job1b:
-    name: 'aws-ireland'
-    env:
-      REGION: us-east
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-## STEPS ##
-    steps:
-    # Checkout the repository to the GitHub Actions runner
-    - uses: actions/checkout@v4
-    
-    # Download and Install AWS Cloud CLI
-    # - name: Install AWS CLI
- 
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: ${{ vars.TF_VERSION }}
-        terraform_wrapper: false
-
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      working-directory: ./1b-aws-ireland
-      run: terraform init
-
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      working-directory: ./1b-aws-ireland
-      run: terraform plan -input=false
-
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      id: apply
-      working-directory: ./1b-aws-ireland
-      run: terraform apply -auto-approve -input=false
-
-  job2a:
-    name: 'ibm-frankfurt'
-    env:
-      REGION: us-east
-      TF_VAR_AUTH_KEY: $IBMC_AUTH_KEY
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-## STEPS ##
-    steps:
-    # Checkout the repository to the GitHub Actions runner
-    - uses: actions/checkout@v4
-
-    # Download and Install IBM Cloud CLI
-    - name: Install IBM Cloud CLI
-      run: |
-        curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
-        ibmcloud --version
-        ibmcloud config --check-version=false
-
-    # Authenticate with IBM Cloud CLI
-    - name: Authenticate with IBM Cloud CLI
-      run: |
-        ibmcloud login --apikey "${IBMC_AUTH_KEY}" -r "${REGION}" -g "${IBMC_RESOURCE_GROUP}"  
-
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: ${{ vars.TF_VERSION }}
-        terraform_wrapper: false
-
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      working-directory: ./2a-ibm-frankfurt
-      run: terraform init
-
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      working-directory: ./2a-ibm-frankfurt
-      run: terraform plan -input=false
-
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      id: apply
-      working-directory: ./2a-ibm-frankfurt
-      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
-      run: terraform apply -auto-approve -input=false
-
