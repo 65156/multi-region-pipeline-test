@@ -11,7 +11,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "null"
+    bucket         = "ferarri-cicd-dtm8f"
     key            = "2a-ibm-frankfurt/terraform.tfstate"
     dynamodb_table = "terraform-state"
     region         = "eu-central-1"

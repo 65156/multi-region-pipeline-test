@@ -7,7 +7,7 @@ terraform {
   }
 
   backend "s3" {
-    bucket         = "null"
+    bucket         = "ferarri-cicd-dtm8f"
     key            = "1b-aws-ireland/terraform.tfstate"
     dynamodb_table = "terraform-state"
     region         = "eu-central-1"
