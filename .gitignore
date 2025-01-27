@@ -45,7 +45,6 @@ override.tf.json
 **/.terraform.tfstate.lock.info
 *.lock.hcl
 **/*.lock.hcl
-**/.terraform*
 .terraform*
 
 # Include override files you do wish to add to version control using negated pattern
