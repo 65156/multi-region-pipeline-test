@@ -1,3 +1,10 @@
+terraform {
+  backend "local" {
+    path = ".state/terraform.tfstate"
+  }
+}
+
+
 provider "aws" {
   region = var.AWS_DEFAULT_REGION
 }
