@@ -24,7 +24,6 @@ jobs:
     name: 'aws-frankfurt (1a)'
     env:
       AWS_DEFAULT_REGION: eu-central-1
-      PATH: 1a-aws-frankfurt
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -33,7 +32,7 @@ jobs:
     steps:
     # Checkout the repository to the GitHub Actions runner
     - uses: actions/checkout@v4
-
+    
     # Download and Install AWS Cloud CLI
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -49,17 +48,12 @@ jobs:
         terraform_version: ${{ vars.TF_VERSION }}
         terraform_wrapper: false
 
-    # Get Branchname
-    - name: Get Branch
-      uses: nelonoel/branch-name@v1   
-
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      working-directory: ./${{ env.PATH }}
+      working-directory: ./1a-aws-frankfurt
       run: |
-        echo ${{ env.PATH }} \
         terraform init \
-        -backend-config="key=${{ env.PATH }}/${BRANCH_NAME}.tfstate" \
+        -backend-config="key=1a-aws-frankfurt/${BRANCH}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -71,9 +65,8 @@ jobs:
     - name: Terraform Apply
       id: apply
       working-directory: ./1a-aws-frankfurt
-      #continue-on-error: true
-      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
+
 
     # - name: Forced Failure
     #   if: steps.apply.outcome == 'failure'
