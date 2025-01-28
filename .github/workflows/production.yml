@@ -9,11 +9,11 @@ env:
   TF_VERSION: ${{ vars.TF_VERSION }}
   GITHUB_TOKEN: ${{ github.TOKEN }}
   ## IBM
-  IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
+  IBMC_AUTH_KEY: ${{ secrets.IBMC_AUTH_KEY_PRODUCTION }}
   IBMC_RESOURCE_GROUP: Default-DO-NOT-USE
   ## AWS
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID_PRODUCTION }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PRODUCTION }}
 
 permissions:
   contents: read
@@ -37,8 +37,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
@@ -95,8 +95,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
@@ -129,8 +129,6 @@ jobs:
     name: 'ibm-frankfurt (2a)'
     env:
       IBMC_DEFAULT_REGION: eu-de
-      TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
-      IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -183,11 +181,8 @@ jobs:
     name: 'global-services (0)'    
     needs: [job1a,job1b,job2a]    
     env:
-      TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
-      IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
       IBMC_DEFAULT_REGION: eu-de
       AWS_DEFAULT_REGION: eu-central-1
-      #TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -202,8 +197,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
     # Download and Install IBM Cloud CLI
