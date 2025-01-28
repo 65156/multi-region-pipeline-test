@@ -2,12 +2,12 @@ name: 'Production'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "production" ]
   pull_request:
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
-  BRANCH: ${{ github.BRANCH }}
+  BRANCH: ${{ github.head_ref || github.ref_name }} 
   GITHUB_TOKEN: ${{ github.TOKEN }}
   ## IBM
   IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
@@ -54,7 +54,7 @@ jobs:
       working-directory: ./1a-aws-frankfurt
       run: |
         terraform init \
-        -backend-config="key=1a-aws-frankfurt/${{ env.BRANCH }}.tfstate" \
+        -backend-config="key=1a-aws-frankfurt/${BRANCH}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -110,7 +110,7 @@ jobs:
       working-directory: ./1b-aws-ireland
       run: |
         terraform init \
-        -backend-config="key=1b-aws-ireland/${{ env.BRANCH }}.tfstate" \
+        -backend-config="key=1b-aws-ireland/${BRANCH}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
