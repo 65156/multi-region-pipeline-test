@@ -19,22 +19,6 @@ permissions:
 
 ## JOBS ##
 jobs:
-  preflight:
-    name: 'preflight check'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: renanmav/match-label-action@v3
-        id: label
-        with:
-          allowed: >
-            ${{ github.ref_name }}
-
-      - name: Echo hello world
-        if: steps.label.outputs.match == '${{ github.ref_name }}'
-        run: echo "Hello world"
   job1a:
     name: 'aws-frankfurt (1a)'
     env:
