@@ -35,6 +35,10 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - uses: actions/checkout@v4
 
+    # Get Branchname
+    - uses: nelonoel/branch-name@v1
+    - run: echo ${BRANCH_NAME}
+
     # Download and Install AWS Cloud CLI
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -55,7 +59,7 @@ jobs:
       working-directory: ./${{ env.PATH }}
       run: |
         terraform init \
-        -backend-config="key=1a-aws-frankfurt/${BRANCH}.tfstate" \
+        -backend-config="key=1a-aws-frankfurt/${BRANCH_NAME}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
