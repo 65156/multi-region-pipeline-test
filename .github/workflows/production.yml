@@ -51,11 +51,7 @@ jobs:
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./1a-aws-frankfurt
-      run: terraform init /
-          -backend-config="bucket=ferarri-cicd-dtm8f" \
-          -backend-config="key=0-global-services/terraform.tfstate" \
-          -backend-config="dynamodb_table=terraform-state" \
-          -backend-config="region=eu-central-1" \
+      run: terraform init 
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -225,8 +221,11 @@ jobs:
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./0-global-services
-      run: terraform init
-
+      run: terraform init \
+          -backend-config="bucket=ferarri-cicd-dtm8f" \
+          -backend-config="key=0-global-services/terraform.tfstate" \
+          -backend-config="dynamodb_table=terraform-state" \
+          -backend-config="region=eu-central-1" \
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./0-global-services
