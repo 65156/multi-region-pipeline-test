@@ -7,7 +7,6 @@ on:
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
-  PATH: "2a-ibm-frankfurt"
   BRANCH: ${{ github.head_ref || github.ref_name }} 
   GITHUB_TOKEN: ${{ github.TOKEN }}
   ## IBM
@@ -26,6 +25,7 @@ jobs:
     name: 'aws-frankfurt (1a)'
     env:
       AWS_DEFAULT_REGION: eu-central-1
+      PATH: 1a-aws-frankfurt
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -56,7 +56,7 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      working-directory: ./${{ env.PATH }}
+      working-directory: ./$PATH
       run: |
         echo ${{ env.PATH }} \
         terraform init \
