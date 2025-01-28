@@ -24,7 +24,7 @@ jobs:
     name: 'aws-frankfurt (1a)'
     env:
       AWS_DEFAULT_REGION: eu-central-1
-      PATH: 1a-aws-frankfurt
+      SET_PATH: 1a-aws-frankfurt
 
     runs-on: ubuntu-latest
     defaults:
@@ -55,9 +55,9 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      working-directory: ./${{ env.PATH }}
+      working-directory: ./${{ env.SET_PATH }}
       run: |
-        echo ${{ env.PATH }}
+        echo ${{ env.SET_PATH }}
         terraform init \
         -backend-config="key=1a-aws-frankfurt/${{ github.ref_name }}.tfstate" \
 
