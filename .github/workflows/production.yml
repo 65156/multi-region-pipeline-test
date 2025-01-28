@@ -19,25 +19,26 @@ permissions:
 
 ## JOBS ##
 jobs:
-  preflight:
-    name: 'preflight check'
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
-    steps:
-      - uses: renanmav/match-label-action@v3
-        id: label
-        with:
-          allowed: >
-            ${{ github.ref_name }}
+  # preflight:
+  #   if: github.ref_name == 'production'
+  #   name: 'preflight check'
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #   steps:
+  #     - uses: renanmav/match-label-action@v3
+  #       id: label
+  #       with:
+  #         allowed: >
+  #           ${{ github.ref_name }}
 
-      - name: Echo hello world
-        if: steps.label.outputs.match == '${{ github.ref_name }}'
-        run: echo "Hello world"
+  #     - name: Echo hello world
+  #       if: steps.label.outputs.match == '${{ github.ref_name }}'
+  #       run: echo "Hello world"
   job1a:
     name: 'aws-frankfurt (1a)'
-    needs: [preflight]   
+#    needs: [preflight]   
     env:
       AWS_DEFAULT_REGION: eu-central-1
       SET_PATH: 1a-aws-frankfurt
@@ -98,7 +99,7 @@ jobs:
 
   job1b:
     name: 'aws-ireland (1b)'
-    needs: [preflight]   
+#    needs: [preflight]   
     env:
       AWS_DEFAULT_REGION: eu-west-1
       SET_PATH: 1b-aws-ireland
@@ -148,7 +149,7 @@ jobs:
 
   job2a:
     name: 'ibm-frankfurt (2a)'
-    needs: [preflight]   
+#    needs: [preflight]   
     env:
       IBMC_DEFAULT_REGION: eu-de
       SET_PATH: 2a-ibm-frankfurt
