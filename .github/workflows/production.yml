@@ -55,8 +55,10 @@ jobs:
     - name: Terraform Init
       working-directory: ./1a-aws-frankfurt
       run: |
+        echo ${{ github.head_ref }} \
+        echo ${{ github.ref_name }} \
         terraform init \
-        -backend-config="key=1a-aws-frankfurt/${BRANCH_NAME}.tfstate" \
+        -backend-config="key=1a-aws-frankfurt/${vars.BRANCH_NAME}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
