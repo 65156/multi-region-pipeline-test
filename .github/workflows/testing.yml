@@ -32,7 +32,7 @@ jobs:
     steps:
     # Checkout the repository to the GitHub Actions runner
     - uses: actions/checkout@v4
-
+    
     # Download and Install AWS Cloud CLI
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -48,10 +48,15 @@ jobs:
         terraform_version: ${{ vars.TF_VERSION }}
         terraform_wrapper: false
 
+    - name: Populate Branch Variable
+      uses: nelonoel/branch-name@v1.0.1
+
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./1a-aws-frankfurt
-      run: terraform init
+      run: |
+        terraform init \
+        -backend-config="key=1a-aws-frankfurt/${{ github.ref_name }}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -63,9 +68,8 @@ jobs:
     - name: Terraform Apply
       id: apply
       working-directory: ./1a-aws-frankfurt
-      #continue-on-error: true
-      #if: github.ref == 'refs/heads/"main"' && github.event_name == 'push'
       run: terraform apply -auto-approve -input=false
+
 
     # - name: Forced Failure
     #   if: steps.apply.outcome == 'failure'
@@ -105,7 +109,9 @@ jobs:
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./1b-aws-ireland
-      run: terraform init
+      run: |
+        terraform init \
+        -backend-config="key=1b-aws-ireland/${{ github.ref_name }}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -156,7 +162,9 @@ jobs:
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./2a-ibm-frankfurt
-      run: terraform init
+      run: |
+        terraform init \
+        -backend-config="key=2a-ibm-frankfurt/${{ github.ref_name }}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -221,8 +229,9 @@ jobs:
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./0-global-services
-      run: terraform init
-
+      run: |
+        terraform init \
+        -backend-config="key=0-global-services/${{ github.ref_name }}.tfstate" \
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./0-global-services

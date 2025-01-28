@@ -111,7 +111,7 @@ jobs:
       working-directory: ./1b-aws-ireland
       run: |
         terraform init \
-        -backend-config="key=1b-aws-ireland/${BRANCH}.tfstate" \
+        -backend-config="key=1b-aws-ireland/${{ github.ref_name }}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -164,7 +164,7 @@ jobs:
       working-directory: ./2a-ibm-frankfurt
       run: |
         terraform init \
-        -backend-config="key=2a-ibm-frankfurt/${{ env.BRANCH }}.tfstate" \
+        -backend-config="key=2a-ibm-frankfurt/${{ github.ref_name }}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -231,7 +231,7 @@ jobs:
       working-directory: ./0-global-services
       run: |
         terraform init \
-        -backend-config="key=0-global-services/${{ env.BRANCH }}.tfstate" \
+        -backend-config="key=0-global-services/${{ github.ref_name }}.tfstate" \
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./0-global-services
