@@ -3,8 +3,6 @@ name: 'Production'
 on:
   push:
     branches: [ "production" ]
-  issues:
-    types: [labeled]
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
