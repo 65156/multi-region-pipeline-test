@@ -56,7 +56,7 @@ jobs:
       working-directory: ./1a-aws-frankfurt
       run: |
         terraform init \
-        -backend-config="key=1a-aws-frankfurt/${BRANCH}.tfstate" \
+        -backend-config="key=1a-aws-frankfurt/${BRANCH_NAME}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
