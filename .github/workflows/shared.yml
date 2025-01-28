@@ -3,7 +3,6 @@ name: 'Shared'
 on:
   push:
     branches: [ "shared-services" ]
-  pull_request:
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}

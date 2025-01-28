@@ -1,9 +1,10 @@
 name: 'Development'
 
 on:
-  push:
-    branches: [ "development" ]
-
+  issues:
+    types: [labeled]
+  workflow_run:
+    branches: [development]
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
   GITHUB_TOKEN: ${{ github.TOKEN }}
@@ -19,22 +20,22 @@ permissions:
 
 ## JOBS ##
 jobs:
-  # preflight:
-  #   name: 'preflight check'
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       shell: bash
-  #   steps:
-  #     - uses: renanmav/match-label-action@v3
-  #       id: label
-  #       with:
-  #         allowed: >
-  #           ${{ github.ref_name }}
+  preflight:
+    name: 'preflight check'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: renanmav/match-label-action@v3
+        id: label
+        with:
+          allowed: >
+            ${{ github.ref_name }}
 
-  #     - name: Echo hello world
-  #       if: steps.label.outputs.match == '${{ github.ref_name }}'
-  #       run: echo "Hello world"
+      - name: Echo hello world
+        if: steps.label.outputs.match == '${{ github.ref_name }}'
+        run: echo "Hello world"
   job1a:
     name: 'aws-frankfurt (1a)'
 #    needs: [preflight]   

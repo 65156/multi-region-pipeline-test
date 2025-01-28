@@ -3,7 +3,6 @@ name: 'Testing'
 on:
   push:
     branches: [ "testing" ]
-  pull_request:
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
