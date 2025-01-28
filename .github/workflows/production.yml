@@ -56,11 +56,11 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      working-directory: ./$PATH
+      working-directory: ./${{ env.PATH }}
       run: |
         echo ${{ env.PATH }} \
         terraform init \
-        -backend-config="key=1a-aws-frankfurt/${BRANCH_NAME}.tfstate" \
+        -backend-config="key=${{ env.PATH }}/${BRANCH_NAME}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
