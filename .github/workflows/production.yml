@@ -7,7 +7,6 @@ on:
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
-  BRANCH: ${{ github.head_ref || github.ref_name }} 
   GITHUB_TOKEN: ${{ github.TOKEN }}
   ## IBM
   IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
@@ -35,10 +34,6 @@ jobs:
     # Checkout the repository to the GitHub Actions runner
     - uses: actions/checkout@v4
 
-    # Get Branchname
-    - name: Nq|
-      uses: nelonoel/branch-name@v1   
-
     # Download and Install AWS Cloud CLI
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
@@ -53,6 +48,10 @@ jobs:
       with:
         terraform_version: ${{ vars.TF_VERSION }}
         terraform_wrapper: false
+
+    # Get Branchname
+    - name: Get Branch
+      uses: nelonoel/branch-name@v1   
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
