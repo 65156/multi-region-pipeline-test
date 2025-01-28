@@ -36,8 +36,8 @@ jobs:
     - uses: actions/checkout@v4
 
     # Get Branchname
-    - uses: nelonoel/branch-name@v1
-    - run: echo ${BRANCH_NAME}
+    - name: Nq|
+      uses: nelonoel/branch-name@v1   
 
     # Download and Install AWS Cloud CLI
     - name: Configure AWS Credentials
