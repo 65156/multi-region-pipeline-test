@@ -57,6 +57,7 @@ jobs:
     - name: Terraform Init
       working-directory: ./${{ env.PATH }}
       run: |
+        echo ${{ env.PATH }}
         terraform init \
         -backend-config="key=1a-aws-frankfurt/${{ github.ref_name }}.tfstate" \
 
