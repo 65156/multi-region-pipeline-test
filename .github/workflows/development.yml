@@ -1,8 +1,8 @@
-name: 'Default Pipeline'
+name: 'Development'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "development" ]
   pull_request:
 
 env: 
