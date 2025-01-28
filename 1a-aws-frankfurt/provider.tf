@@ -8,7 +8,7 @@ terraform {
 
   backend "s3" {
     bucket         = "ferarri-cicd-dtm8f"
-    key            = "1a-aws-frankfurt/terraform.tfstate"
+    key            = "" 
     dynamodb_table = "terraform-state"
     region         = "eu-central-1"
     encrypt        = true

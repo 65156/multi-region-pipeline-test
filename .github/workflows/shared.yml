@@ -48,10 +48,11 @@ jobs:
         terraform_version: ${{ vars.TF_VERSION }}
         terraform_wrapper: false
 
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+ # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       working-directory: ./1a-aws-frankfurt
       run: terraform init
+
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan

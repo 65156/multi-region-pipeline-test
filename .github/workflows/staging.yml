@@ -53,6 +53,7 @@ jobs:
       working-directory: ./1a-aws-frankfurt
       run: terraform init
 
+
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./1a-aws-frankfurt

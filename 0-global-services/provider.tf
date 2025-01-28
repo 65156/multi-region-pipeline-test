@@ -10,10 +10,10 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "" # "ferarri-cicd-dtm8f"
+    bucket         = "ferarri-cicd-dtm8f"
     key            = "" # "0-global-services/terraform.tfstate"
-    dynamodb_table = "" # "terraform-state"
-    region         = "" # "eu-central-1"
+    dynamodb_table = "terraform-state"
+    region         = "eu-central-1"
     encrypt        = true
   }
 }
