@@ -16,7 +16,7 @@ resource "random_string" "bucket_suffix" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "${var.bucket_prefix}-${random_string.bucket_suffix.result}"
+  bucket = "${var.bucket_prefix}-${random_string.bucket_suffix.result}" # todo, add ${var.environment_prefix}
 
   lifecycle {
     prevent_destroy = false
@@ -51,7 +51,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "terraform_state" 
 
 # create dynamodb table with LockID as key
 resource "aws_dynamodb_table" "terraform_state" {
-  name         = "terraform-state"
+  name         = "terraform-state" # todo, add ${var.environment_prefix}
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "LockID"
 
