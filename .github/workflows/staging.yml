@@ -9,11 +9,11 @@ env:
   TF_VERSION: ${{ vars.TF_VERSION }}
   GITHUB_TOKEN: ${{ github.TOKEN }}
   ## IBM
-  IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
+  IBMC_AUTH_KEY: ${{ secrets.IBMC_AUTH_KEY_STAGING }}
   IBMC_RESOURCE_GROUP: Default-DO-NOT-USE
   ## AWS
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID_STAGING }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_STAGING }}
 
 permissions:
   contents: read
@@ -24,6 +24,8 @@ jobs:
     name: 'aws-frankfurt (1a)'
     env:
       AWS_DEFAULT_REGION: eu-central-1
+      SET_PATH: 1a-aws-frankfurt
+
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -37,8 +39,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
@@ -56,7 +58,7 @@ jobs:
       working-directory: ./1a-aws-frankfurt
       run: |
         terraform init \
-        -backend-config="key=1a-aws-frankfurt/${{ github.ref_name }}.tfstate" \
+        -backend-config="key=${{ env.SET_PATH }}/${{ github.ref_name }}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -82,6 +84,8 @@ jobs:
     name: 'aws-ireland (1b)'
     env:
       AWS_DEFAULT_REGION: eu-west-1
+      SET_PATH: 1b-aws-ireland
+
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -95,8 +99,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
@@ -111,7 +115,7 @@ jobs:
       working-directory: ./1b-aws-ireland
       run: |
         terraform init \
-        -backend-config="key=1b-aws-ireland/${{ github.ref_name }}.tfstate" \
+        -backend-config="key=${{ env.SET_PATH }}/${{ github.ref_name }}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -129,8 +133,8 @@ jobs:
     name: 'ibm-frankfurt (2a)'
     env:
       IBMC_DEFAULT_REGION: eu-de
-      TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
-      IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
+      SET_PATH: 2a-ibm-frankfurt
+
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -164,7 +168,7 @@ jobs:
       working-directory: ./2a-ibm-frankfurt
       run: |
         terraform init \
-        -backend-config="key=2a-ibm-frankfurt/${{ github.ref_name }}.tfstate" \
+        -backend-config="key=${{ env.SET_PATH }}/${{ github.ref_name }}.tfstate" \
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
@@ -183,11 +187,10 @@ jobs:
     name: 'global-services (0)'    
     needs: [job1a,job1b,job2a]    
     env:
-      TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
-      IBMC_AUTH_KEY: ${{ secrets.AUTH_KEY }}
       IBMC_DEFAULT_REGION: eu-de
       AWS_DEFAULT_REGION: eu-central-1
-      #TF_VAR_AUTH_KEY: ${{ secrets.AUTH_KEY }}
+      SET_PATH: 0-global-services
+
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -202,8 +205,8 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v4
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
     # Download and Install IBM Cloud CLI
@@ -231,7 +234,8 @@ jobs:
       working-directory: ./0-global-services
       run: |
         terraform init \
-        -backend-config="key=0-global-services/${{ github.ref_name }}.tfstate" \
+        -backend-config="key=${{ env.SET_PATH }}/${{ github.ref_name }}.tfstate" \
+
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./0-global-services
