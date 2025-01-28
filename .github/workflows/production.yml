@@ -7,6 +7,7 @@ on:
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
+  PATH: "2a-ibm-frankfurt"
   BRANCH: ${{ github.head_ref || github.ref_name }} 
   GITHUB_TOKEN: ${{ github.TOKEN }}
   ## IBM
@@ -51,7 +52,7 @@ jobs:
 
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
-      working-directory: ./1a-aws-frankfurt
+      working-directory: ./${{ env.PATH }}
       run: |
         terraform init \
         -backend-config="key=1a-aws-frankfurt/${BRANCH}.tfstate" \
