@@ -1,45 +1,26 @@
-name: 'Production Build'
+name: 'Testing'
 
 on:
   push:
-    branches: [ "production" ]
+    branches: [ "testing" ]
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
   GITHUB_TOKEN: ${{ github.TOKEN }}
   ## IBM
-  IBMC_AUTH_KEY: ${{ secrets.IBMC_AUTH_KEY_PRODUCTION }}
+  IBMC_AUTH_KEY: ${{ secrets.IBMC_AUTH_KEY_TESTING }}
   IBMC_RESOURCE_GROUP: Default-DO-NOT-USE
   ## AWS
-  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID_PRODUCTION }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_PRODUCTION }}
+  AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID_TESTING }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_TESTING }}
 
 permissions:
   contents: read
 
 ## JOBS ##
 jobs:
-  # preflight:
-  #   name: 'preflight check'
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       shell: bash
-  # # Step to define the branch
-
-  #   steps:
-  #     - uses: renanmav/match-label-action@v3
-  #       id: label
-  #       with:
-  #         allowed: >
-  #           ${{ github.ref_name }}
-
-  #     - name: Echo hello world
-  #       if: steps.label.outputs.match == '${{ github.ref_name }}'
-  #       run: echo "Hello world"
   job1a:
     name: 'aws-frankfurt (1a)'
-#    needs: [preflight]   
     env:
       AWS_DEFAULT_REGION: eu-central-1
       SET_PATH: 1a-aws-frankfurt
@@ -100,7 +81,6 @@ jobs:
 
   job1b:
     name: 'aws-ireland (1b)'
-#    needs: [preflight]   
     env:
       AWS_DEFAULT_REGION: eu-west-1
       SET_PATH: 1b-aws-ireland
@@ -150,7 +130,6 @@ jobs:
 
   job2a:
     name: 'ibm-frankfurt (2a)'
-#    needs: [preflight]   
     env:
       IBMC_DEFAULT_REGION: eu-de
       SET_PATH: 2a-ibm-frankfurt
