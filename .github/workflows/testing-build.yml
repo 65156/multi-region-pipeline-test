@@ -1,8 +1,10 @@
 name: 'Testing Apply'
 
 on:
-  push:
-    branches: [ "testing" ]
+  workflow_dispatch:
+  # push:
+  #   branches: [ "testing" ]
+    
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}

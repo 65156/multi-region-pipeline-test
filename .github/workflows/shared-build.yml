@@ -1,8 +1,9 @@
 name: 'Shared Apply'
 
 on:
-  push:
-    branches: [ "shared-services" ]
+  workflow_dispatch:
+  # push:
+  #   branches: [ "shared-services" ]
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}

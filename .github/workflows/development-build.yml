@@ -1,8 +1,9 @@
 name: 'Development Apply'
 
 on:
-  push:
-    branches: [ "development" ]
+  workflow_dispatch:
+  # push:
+  #   branches: [ "development" ]
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}

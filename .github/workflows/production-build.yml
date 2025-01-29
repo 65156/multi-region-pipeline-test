@@ -1,8 +1,9 @@
 name: 'Production Apply'
 
 on:
-  push:
-    branches: [ "production" ]
+  workflow_dispatch:
+  # push:
+  #   branches: [ "production" ]
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
