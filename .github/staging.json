@@ -1,0 +1,50 @@
+{
+  "id": 3454686,
+  "name": "staging",
+  "target": "branch",
+  "source_type": "Repository",
+  "source": "65156/multi-region-pipeline-test",
+  "enforcement": "active",
+  "conditions": {
+    "ref_name": {
+      "exclude": [],
+      "include": [
+        "refs/heads/staging"
+      ]
+    }
+  },
+  "rules": [
+    {
+      "type": "deletion"
+    },
+    {
+      "type": "non_fast_forward"
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": false,
+        "do_not_enforce_on_create": false,
+        "required_status_checks": [
+          {
+            "context": "stg-plan-0-global-services",
+            "integration_id": 15368
+          },
+          {
+            "context": "stg-plan-1a-aws-frankfurt",
+            "integration_id": 15368
+          },
+          {
+            "context": "stg-plan-1b-aws-ireland",
+            "integration_id": 15368
+          },
+          {
+            "context": "stg-plan-2a-ibm-frankfurt",
+            "integration_id": 15368
+          }
+        ]
+      }
+    }
+  ],
+  "bypass_actors": []
+}
