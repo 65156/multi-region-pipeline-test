@@ -18,3 +18,6 @@ terraform apply -auto-apply
 ```
 
 Once backend has been configured, update the backend bucket arg found in each of the provider.tf files in each regional directory and re-run the github actions pipeline.
+
+#### Install the Branch Rulesets
+Update your Github Actions Rulesets, with the .json files found in /.github
