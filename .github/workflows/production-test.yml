@@ -19,36 +19,8 @@ permissions:
 
 ## JOBS ##
 jobs:
-  # preflight:
-  #   name: 'preflight check'
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       shell: bash
-  # # Step to define the branch
-
-  #   name: Set environment for branch
-  #       run: |
-  #         if [[ $GITHUB_REF_NAME == 'master' ]]; then
-  #             echo "GLCOUD_PROJECT=my-project-stg" >> "$GITHUB_ENV"
-  #             echo "VERCEL_TARGET=staging" >> "$GITHUB_ENV"
-  #         else
-  #             echo "GLCOUD_PROJECT=my-project-prd" >> "$GITHUB_ENV"
-  #             echo "VERCEL_TARGET=production" >> "$GITHUB_ENV"
-  #         fi
-
-  #   steps:
-  #     - uses: renanmav/match-label-action@v3
-  #       id: label
-  #       with:
-  #         allowed: >
-  #           ${{ github.ref_name }}
-
-  #     - name: Echo hello world
-  #       if: steps.label.outputs.match == '${{ github.ref_name }}'
-  #       run: echo "Hello world"
   job1a:
-    name: '[test] aws-frankfurt (1a)'
+    name: 'prd-test-1a-aws-frankfurt'
 #    needs: [preflight]   
     env:
       AWS_DEFAULT_REGION: eu-central-1
@@ -94,7 +66,7 @@ jobs:
       run: terraform plan -input=false
 
   job1b:
-    name: '[test] aws-ireland (1b)'
+    name: 'prd-test-1b-aws-ireland'
 #    needs: [preflight]   
     env:
       AWS_DEFAULT_REGION: eu-west-1
@@ -137,7 +109,7 @@ jobs:
       run: terraform plan -input=false
 
   job2a:
-    name: '[test] ibm-frankfurt (2a)'
+    name: 'prd-test-2a-ibm-frankfurt'
 #    needs: [preflight]   
     env:
       IBMC_DEFAULT_REGION: eu-de
@@ -184,7 +156,7 @@ jobs:
       run: terraform plan -input=false
 
   job0:
-    name: '[test] global-services (0)'    
+    name: 'prd-test-0-global-services'    
     needs: [job1a,job1b,job2a]    
     env:
       IBMC_DEFAULT_REGION: eu-de
