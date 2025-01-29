@@ -1,4 +1,4 @@
-name: 'Production'
+name: 'Production Build'
 
 on:
   push:
@@ -256,10 +256,10 @@ jobs:
         terraform init \
         -backend-config="key=${{ env.SET_PATH }}/${{ github.ref_name }}.tfstate" \
 
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      working-directory: ./0-global-services
-      run: terraform plan -input=false
+    # # Generates an execution plan for Terraform
+    # - name: Terraform Plan
+    #   working-directory: ./0-global-services
+    #   run: terraform plan -input=false
 
     # - name: Manual Approval
     #   uses: trstringer/manual-approval@v1
