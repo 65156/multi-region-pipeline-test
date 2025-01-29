@@ -1,4 +1,4 @@
-name: 'Production Test'
+name: 'Production Plan'
 
 on:
   pull_request_target:
@@ -20,7 +20,7 @@ permissions:
 ## JOBS ##
 jobs:
   job1a:
-    name: 'prd-test-1a-aws-frankfurt'
+    name: 'prd-plan-1a-aws-frankfurt'
 #    needs: [preflight]   
     env:
       AWS_DEFAULT_REGION: eu-central-1
@@ -66,7 +66,7 @@ jobs:
       run: terraform plan -input=false
 
   job1b:
-    name: 'prd-test-1b-aws-ireland'
+    name: 'prd-plan-1b-aws-ireland'
 #    needs: [preflight]   
     env:
       AWS_DEFAULT_REGION: eu-west-1
@@ -109,7 +109,7 @@ jobs:
       run: terraform plan -input=false
 
   job2a:
-    name: 'prd-test-2a-ibm-frankfurt'
+    name: 'prd-plan-2a-ibm-frankfurt'
 #    needs: [preflight]   
     env:
       IBMC_DEFAULT_REGION: eu-de
@@ -156,7 +156,7 @@ jobs:
       run: terraform plan -input=false
 
   job0:
-    name: 'prd-test-0-global-services'    
+    name: 'prd-plan-0-global-services'    
     needs: [job1a,job1b,job2a]    
     env:
       IBMC_DEFAULT_REGION: eu-de
