@@ -19,24 +19,6 @@ permissions:
 
 ## JOBS ##
 jobs:
-  # preflight:
-  #   name: 'preflight check'
-  #   runs-on: ubuntu-latest
-  #   defaults:
-  #     run:
-  #       shell: bash
-  # # Step to define the branch
-
-  #   steps:
-  #     - uses: renanmav/match-label-action@v3
-  #       id: label
-  #       with:
-  #         allowed: >
-  #           ${{ github.ref_name }}
-
-  #     - name: Echo hello world
-  #       if: steps.label.outputs.match == '${{ github.ref_name }}'
-  #       run: echo "Hello world"
   job1a:
     name: 'aws-frankfurt (1a)'
 #    needs: [preflight]   
@@ -78,25 +60,10 @@ jobs:
         terraform init \
         -backend-config="key=${{ env.SET_PATH }}/${{ github.ref_name }}.tfstate" \
 
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      working-directory: ./1a-aws-frankfurt
-      run: terraform plan -input=false
-
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
       id: apply
       working-directory: ./1a-aws-frankfurt
       run: terraform apply -auto-approve -input=false
-
-
-    # - name: Forced Failure
-    #   if: steps.apply.outcome == 'failure'
-    #   uses: actions/github-script@v3
-    #   with:
-    #     script: |
-    #         core.setFailed('Terraform Apply Step Failed: Please inspect the logs.')
 
   job1b:
     name: 'aws-ireland (1b)'
@@ -136,13 +103,6 @@ jobs:
         terraform init \
         -backend-config="key=${{ env.SET_PATH }}/${{ github.ref_name }}.tfstate" \
 
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      working-directory: ./1b-aws-ireland
-      run: terraform plan -input=false
-
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
       id: apply
       working-directory: ./1b-aws-ireland
@@ -190,13 +150,6 @@ jobs:
         terraform init \
         -backend-config="key=${{ env.SET_PATH }}/${{ github.ref_name }}.tfstate" \
 
-    # Generates an execution plan for Terraform
-    - name: Terraform Plan
-      working-directory: ./2a-ibm-frankfurt
-      run: terraform plan -input=false
-
-      # On push to "main", build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
       id: apply
       working-directory: ./2a-ibm-frankfurt
