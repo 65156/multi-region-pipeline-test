@@ -1,9 +1,11 @@
 ## CICD Pipeline Template 001 (Github Actions)
 Supports 
-- [x] Multi Regions
-- [x] Multi Clouds
-- [x] Single Environment
+- [x] Multiple Regions
+- [x] Multiple Clouds
+- [x] Multiple Environment
 - [x] Github Actions for CICD
+- [x] Manual Apply Step
+- [x] Automated Testing on Pull Requests
 
 ### Usage
 
