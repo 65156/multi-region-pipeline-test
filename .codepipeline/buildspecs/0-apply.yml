@@ -1,0 +1,61 @@
+env:
+  variables:
+    TF_VERSION: 1.5.7
+
+phases:
+  install:
+    on-failure: ABORT
+    commands:
+      - set -e
+      # Populate Required Variables
+      - DEFAULT_PATH=$(pwd)
+      - TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+      - OUTPUT_PROFILE=shared
+      # Install Terraform
+      - cd /tmp
+      - echo "Installing Terraform"
+      - curl -q -o terraform_${TF_VERSION}_linux_amd64.zip https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+      - unzip -q -o terraform_${TF_VERSION}_linux_amd64.zip && mv terraform /usr/bin
+      - terraform --version
+  pre_build:
+    on-failure: ABORT
+    commands:
+      - echo $DEFAULT_PATH
+      - cd $DEFAULT_PATH && ls -l
+      - shared_sts=$(aws sts assume-role --role-arn arn:aws:iam::${SHARED_ACCOUNT_ID}:role/${SHARED_IAM_ROLE} --role-session-name $OUTPUT_PROFILE --query 'Credentials.[AccessKeyId,SecretAccessKey,SessionToken]' --output text)
+      - echo "Converting sts to array"
+      - shared_sts=($shared_sts)
+      - aws configure set aws_access_key_id ${shared_sts[0]} --profile $OUTPUT_PROFILE
+      - aws configure set aws_secret_access_key ${shared_sts[1]} --profile $OUTPUT_PROFILE
+      - aws configure set aws_session_token ${shared_sts[2]} --profile $OUTPUT_PROFILE
+      - JSON=$(aws sts assume-role --role-arn arn:aws:iam::${ACCOUNT_ID}:role/${IAM_ROLE} --role-session-name ${IAM_ROLE})
+      #Make newly assumed role default session
+      - export AWS_ACCESS_KEY_ID=$(echo ${JSON} | jq --raw-output ".Credentials[\"AccessKeyId\"]")
+      - export AWS_SECRET_ACCESS_KEY=$(echo ${JSON} | jq --raw-output ".Credentials[\"SecretAccessKey\"]")
+      - export AWS_SESSION_TOKEN=$(echo ${JSON} | jq --raw-output ".Credentials[\"SessionToken\"]")
+      # Configure SSH Key
+      - ssh_key_parameter=$(aws ssm get-parameter --name ssh_key --profile $OUTPUT_PROFILE --with-decryption 2> /dev/null || echo "None")
+      - |
+        if [[ $ssh_key_parameter != "None" ]]; then
+            ssh_key=$(jq --raw-output ".Parameter.Value" <<< $ssh_key_parameter)
+            mkdir -p ~/.ssh
+            echo "Host *" >> ~/.ssh/config
+            echo "StrictHostKeyChecking no" >> ~/.ssh/config
+            echo "UserKnownHostsFile=/dev/null" >> ~/.ssh/config
+            echo "$ssh_key" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            eval "$(ssh-agent -s)"
+            ssh-add ~/.ssh/id_rsa
+            else
+            echo "Empty ssh Key"
+          fi
+  build:
+    on-failure: ABORT
+    commands:
+      - cd /0-global-services
+      - echo "[Build]:Executing Apply on Core Infrastructure ..."
+      - terraform init -backend-config="bucket=${TF_S3_BUCKET}" -backend-config="region=${TF_BACKEND_REGION}" -backend-config="encrypt=${TF_BACKEND_ENCRYPT}" -backend-config="dynamodb_table=${TF_DDB_TABLE}" -backend-config="key=${TF_S3_KEY}" -backend-config="role_arn=arn:aws:iam::${SHARED_ACCOUNT_ID}:role/${TF_BACKEND_ROLE}"
+      - terraform apply -auto-approve
+  post_build:
+    commands:
+      - echo "[Post Build]:Completed Terraform Apply..."
