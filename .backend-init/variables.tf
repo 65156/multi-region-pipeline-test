@@ -3,5 +3,5 @@ variable "AWS_DEFAULT_REGION" {
 }
 
 variable "bucket_prefix" {
-  default = "ferarri-cicd"
+  default = "customer-cicd"
 }
