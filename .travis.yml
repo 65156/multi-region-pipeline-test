@@ -1,0 +1,127 @@
+# Define environment
+dist: xenial # Ubuntu 16.04
+language: bash
+git:
+  quiet: true
+env:
+  global:
+    - TF_BUCKET="customer-cicd-dtm8f"
+    - TF_REGION="eu-central-1"
+branches:
+  only:
+    - development
+cache:
+  pip: true
+jobs:
+  include:
+    - stage: Detect Secrets
+      install:
+        - pip install --upgrade pip
+        - pip install --upgrade --use-pep517 "git+https://github.com/ibm/detect-secrets.git@master#egg=detect-secrets"
+      script:
+        - sudo find ~ -name detect-secrets
+        - detect-secrets scan --update .secrets.baseline
+        - detect-secrets audit --report --fail-on-unaudited --fail-on-live --fail-on-audited-real .secrets.baseline
+    # Stage 1 - Plan #
+    # -------------- #
+    - stage: Plan - Stage 1
+    #   JOB 1   #
+      script:
+        - bash .travis/plan.sh
+      if: type = pull_request
+      before_script: 
+        - bash .travis/awsauth.sh
+      name: "1a-aws-frankfurt"
+      env: 
+        - WORKING_DIR="./1a-aws-frankfurt"
+        - AWS_DEFAULT_REGION="eu-central-1"
+    #   JOB 2   #
+    - script:
+        - bash .travis/plan.sh  
+      if: type = pull_request
+      before_script: 
+        - bash .travis/awsauth.sh
+      name: "1b-aws-ireland"
+      env: 
+        - WORKING_DIR="./1b-aws-ireland"
+        - AWS_DEFAULT_REGION="eu-west-1"
+    #   JOB 3   #  
+    - script:
+        - bash .travis/plan.sh 
+      if: type = pull_request
+      before_script: 
+        - bash .travis/awsauth.sh
+        - bash .travis/ibmauth.sh
+      name: "2a-ibm-frankfurt"
+      env: 
+        - WORKING_DIR="./2a-ibm-frankfurt"
+        - AWS_DEFAULT_REGION="eu-central-1"
+        - IBMC_DEFAULT_REGION="eu-de"
+        - IBMC_RESOURCE_GROUP="Default-DO-NOT-USE"
+    # Stage 2 - Plan  #
+    # --------------- #
+    - stage: Plan - Stage 2
+    #   JOB 1   #
+      script:
+        - bash .travis/plan.sh    
+      if: type = pull_request
+      before_script: 
+        - bash .travis/awsauth.sh
+        - bash .travis/ibmauth.sh
+      name: "0-global-services"
+      env: 
+        - WORKING_DIR="./0-global-services"
+        - AWS_DEFAULT_REGION="eu-central-1"
+        - IBMC_DEFAULT_REGION="eu-de"
+        - IBMC_RESOURCE_GROUP="Default-DO-NOT-USE"
+    # Stage 3 - Apply  #
+    # ----------------- #
+    - stage: Apply - Stage 1
+    #   JOB 1   #
+      script:
+        - bash .travis/apply.sh
+      if: type = push
+      before_script: 
+        - bash .travis/awsauth.sh
+      name: "1a-aws-frankfurt"
+      env: 
+        - WORKING_DIR="./1a-aws-frankfurt"
+        - AWS_DEFAULT_REGION="eu-central-1"
+    #   JOB 2   #
+    - script:
+        - bash .travis/apply.sh 
+      if: type = push
+      before_script: 
+        - bash .travis/awsauth.sh
+      name: "1b-aws-ireland"
+      env: 
+        - WORKING_DIR="./1b-aws-ireland"
+        - AWS_DEFAULT_REGION="eu-west-1"
+    #   JOB 3   #  
+    - script:
+        - bash .travis/apply.sh
+      if: type = push
+      before_script: 
+        - bash .travis/awsauth.sh
+        - bash .travis/ibmauth.sh
+      name: "2a-ibm-frankfurt"
+      env: 
+        - WORKING_DIR="./2a-ibm-frankfurt"
+        - AWS_DEFAULT_REGION="eu-central-1"
+        - IBMC_DEFAULT_REGION="eu-de"
+        - IBMC_RESOURCE_GROUP="Default-DO-NOT-USE"
+    # Stage 4 - Apply  #
+    # --------------- #
+    - stage: Apply - Stage 2
+      if: type = push
+      script:
+        - bash .travis/apply.sh  
+      before_script: 
+        - bash .travis/awsauth.sh
+        - bash .travis/ibmauth.sh
+      name: "0-global-services"
+      env:       
+        - WORKING_DIR="./0-global-services"
+        - AWS_DEFAULT_REGION="eu-central-1"
+        - IBMC_DEFAULT_REGION="eu-de"
+        - IBMC_RESOURCE_GROUP="Default-DO-NOT-USE"
