@@ -1,9 +1,9 @@
 name: 'Testing Apply'
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches: [ "testing" ]
+  #workflow_dispatch:
+  push:
+    branches: [ "testing" ]
     
 
 env: 

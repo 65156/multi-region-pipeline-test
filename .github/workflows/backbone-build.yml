@@ -1,9 +1,9 @@
-name: 'Shared Apply'
+name: 'Backbone Apply'
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches: [ "shared-services" ]
+  #workflow_dispatch:
+  push:
+    branches: [ "backbone" ]
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}

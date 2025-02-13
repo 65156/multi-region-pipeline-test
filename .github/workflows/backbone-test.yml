@@ -1,8 +1,8 @@
-name: 'Shared Plan'
+name: 'Backbone Plan'
 
 on:
   pull_request_target:
-    branches: [ "shared-services" ]
+    branches: [ "backbone" ]
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
