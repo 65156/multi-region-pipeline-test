@@ -59,7 +59,7 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./1a-aws-frankfurt
-      run: terraform plan -input=false
+      run: terraform plan -input=false -lock
 
   job1b:
     name: 'ss-plan-1b-aws-ireland'
@@ -101,7 +101,7 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./1b-aws-ireland
-      run: terraform plan -input=false
+      run: terraform plan -input=false -lock
 
   job2a:
     name: 'ss-plan-2a-ibm-frankfurt'
@@ -147,7 +147,7 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./2a-ibm-frankfurt
-      run: terraform plan -input=false
+      run: terraform plan -input=false -lock
 
   job0:
     name: 'ss-plan-0-global-services'    
@@ -205,4 +205,4 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       working-directory: ./0-global-services
-      run: terraform plan -input=false
+      run: terraform plan -input=false -lock
