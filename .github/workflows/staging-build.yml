@@ -1,9 +1,9 @@
 name: 'Staging Apply'
 
 on:
-  workflow_dispatch:
-  # push:
-  #   branches: [ "staging" ]
+  #workflow_dispatch:
+  push:
+    branches: [ "staging" ]
 
 env: 
   TF_VERSION: ${{ vars.TF_VERSION }}
