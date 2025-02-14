@@ -49,7 +49,7 @@ echo tflint check complete
 
 echo ""
 ((NUM++)); echo -e ${STYLE1}\[STEP ${NUM}\] - running terraform plan
-terraform plan -lock=false -input=false 
+terraform plan -lock=false -input=false -lock
 
 # echo ""
 # ((NUM++)); echo -e ${STYLE1}\[STEP ${NUM}\] - running tfsec

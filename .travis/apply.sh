@@ -28,5 +28,5 @@ terraform init \
 
 echo ""
 ((NUM++)); echo -e ${FG}${STYLE1}\[STEP ${NUM}\] - running terraform apply
-terraform apply -auto-approve -input=false
+terraform apply -auto-approve -input=false -lock-timeout=120
 #echo "running terraform apply"
