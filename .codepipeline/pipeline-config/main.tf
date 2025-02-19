@@ -172,8 +172,6 @@ resource "aws_codebuild_project" "pr" {
     git_clone_depth = 1
     buildspec       = ".codepipeline/buildspec-pr.yaml"
   }
-  
-
   source_version = "main"
 }
 
@@ -267,12 +265,6 @@ resource "aws_codebuild_project" "build" {
     image                       = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
     type                        = "LINUX_CONTAINER"
     image_pull_credentials_type = "CODEBUILD"
-
-    environment_variable {
-      name  = "SOME_KEY2"
-      value = "SOME_VALUE2"
-      type  = "PARAMETER_STORE"
-    }
   }
   logs_config {
     cloudwatch_logs {
