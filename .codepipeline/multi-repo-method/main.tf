@@ -14,7 +14,6 @@ resource "aws_codecommit_repository" "this" {
   for_each        = { for entry in local.repositories_deploy : "${entry.id}" => entry }
   repository_name = "${local.full_resource_prefix}-${each.value.name}"
   description     = "${each.value.name} repository"
-  default_branch  = main
 }
 
 # codecommit repo Rules
@@ -33,22 +32,22 @@ resource "aws_codecommit_approval_rule_template" "automatic" {
   })
 }
 
-# resource "aws_codecommit_approval_rule_template" "reviewers" {
-#   for_each    = { for entry in local.approval_templates_deploy : "${entry.id}" => entry }
-#   name        = join("-",each.value.name,local.project_uid)
-#   description = "additional approval rule template for use across multiple repositories"
+resource "aws_codecommit_approval_rule_template" "reviewers" {
+  for_each    = { for entry in local.approval_templates_deploy : "${entry.id}" => entry }
+  name        = "${each.value.name}-${local.project_uid}"
+  description = "additional approval rule template for use across multiple repositories"
 
-#   content = jsonencode({
-#     Version               = "2018-11-08"
-#     DestinationReferences = ["refs/heads/main"]
-#     Statements = [{
-#       Type                    = "Approvers"
-#       NumberOfApprovalsNeeded = each.value.approvals_needed
-#       ApprovalPoolMembers     = [for i in values(aws_iam_role.this)[*] : "${i.arn}/*"] # [values(aws_iam_role.this)[*].arn]
+  content = jsonencode({
+    Version               = "2018-11-08"
+    DestinationReferences = ["refs/heads/main"]
+    Statements = [{
+      Type                    = "Approvers"
+      NumberOfApprovalsNeeded = each.value.approvals_needed
+      ApprovalPoolMembers     = [for i in values(aws_iam_role.this)[*] : "${i.arn}/*"] # [values(aws_iam_role.this)[*].arn]
 
-#     }]
-#   })
-# }
+    }]
+  })
+}
 
 # Parsing for Codecommit 
 locals {
