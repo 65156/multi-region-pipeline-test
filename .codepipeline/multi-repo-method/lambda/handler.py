@@ -9,7 +9,6 @@
 >>> .summary
 Lambda function features
 - Adds status comment to pull request
-- Automatic Approval on successful build
 
 >>> .script_start'''
 

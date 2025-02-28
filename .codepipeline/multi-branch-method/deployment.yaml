@@ -6,34 +6,35 @@
 #   ▀▀▀·▀▀▀▀ ▀▀  █▪▀▀▀     ▀▀▀▀ .▀    ▀█▄▀▪.▀  ▀ ▀▀▀  ▀▀▀▀ 
 #       ---------------------------------------------
 # >>> .yaml start
-customer_prefix: ferrari # used in global construct names, like repos, s3 buckets etc.
-project_uid: mmv5x1 # app designation, used in names and tags.
+customer_prefix: branch-test # used in global construct names, like repos, s3 buckets etc.
+project_uid: kiq21s # app designation, used in names and tags.
 region: eu-central-1
 lambda_automation: FULL_AUTO # >>> accepted values: FULL_AUTO, AUTO_CLOSE, APPROVE_ONLY
 cicd:
   reviewers_iam_roles:
     # - id: CodeCommitReviewer
   approval_templates:
-    - id: development-template
+    - id: development-template 
       reference_existing: false
       approvals_needed: 1
+      target_branches:
+        - development
+        - testing
       attach_pool_members:
-        # - CodeCommitReviewer
+        - CodeCommitReviewer
     - id: production-template
       reference_existing: false
       approvals_needed: 2
+      target_branches:
+        - production
       attach_pool_members:
-        # - CodeCommitReviewer
-  repositories:
+        - CodeCommitReviewer
+  repository_name: infrastructure
+  repository_branches:
     - id: development
       reference_existing: false
-      attach_templates: 
-        - development-template
     - id: testing
       reference_existing: false
-      attach_templates: 
-        - development-template
     - id: production
+      default: true
       reference_existing: false
-      attach_templates: 
-        - production-template

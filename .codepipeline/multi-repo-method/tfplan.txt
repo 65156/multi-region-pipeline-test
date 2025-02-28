@@ -1,0 +1,906 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+ <= read (data resources)
+
+Terraform will perform the following actions:
+
+  # data.aws_iam_policy_document.cicd will be read during apply
+  # (config refers to values not yet known)
+ <= data "aws_iam_policy_document" "cicd" {
+      + id            = (known after apply)
+      + json          = (known after apply)
+      + minified_json = (known after apply)
+
+      + statement {
+          + actions   = [
+              + "logs:CreateLogGroup",
+              + "logs:CreateLogStream",
+              + "logs:PutLogEvents",
+            ]
+          + effect    = "Allow"
+          + resources = [
+              + "*",
+            ]
+        }
+      + statement {
+          + actions   = [
+              + "s3:GetBucketAcl",
+              + "s3:GetBucketLocation",
+              + "s3:GetObject",
+              + "s3:GetObjectVersion",
+              + "s3:PutObject",
+            ]
+          + effect    = "Allow"
+          + resources = [
+              + "arn:aws:s3:::codepipeline-eu-central-1-*",
+            ]
+        }
+      + statement {
+          + actions   = [
+              + "codecommit:GetPullRequest",
+              + "codecommit:GitPull",
+              + "codecommit:Merge*",
+              + "codecommit:PostCommentForPullRequest",
+              + "codecommit:UpdatePullRequestApprovalState",
+              + "codecommit:UpdatePullRequestStatus",
+            ]
+          + effect    = "Allow"
+          + resources = [
+              + (known after apply),
+              + (known after apply),
+              + (known after apply),
+            ]
+        }
+      + statement {
+          + actions   = [
+              + "codebuild:BatchPutCodeCoverages",
+              + "codebuild:BatchPutTestCases",
+              + "codebuild:CreateReport",
+              + "codebuild:CreateReportGroup",
+              + "codebuild:StartBuild",
+              + "codebuild:UpdateReport",
+            ]
+          + effect    = "Allow"
+          + resources = [
+              + (known after apply),
+              + (known after apply),
+              + (known after apply),
+            ]
+        }
+      + statement {
+          + actions   = [
+              + "codebuild:BatchPutCodeCoverages",
+              + "codebuild:BatchPutTestCases",
+              + "codebuild:CreateReport",
+              + "codebuild:CreateReportGroup",
+              + "codebuild:StartBuild",
+              + "codebuild:UpdateReport",
+            ]
+          + effect    = "Allow"
+          + resources = [
+              + (known after apply),
+              + (known after apply),
+              + (known after apply),
+            ]
+        }
+    }
+
+  # data.aws_iam_policy_document.reviewers will be read during apply
+  # (config refers to values not yet known)
+ <= data "aws_iam_policy_document" "reviewers" {
+      + id            = (known after apply)
+      + json          = (known after apply)
+      + minified_json = (known after apply)
+
+      + statement {
+          + actions   = [
+              + "codecommit:GetPullRequest",
+              + "codecommit:GitPull",
+              + "codecommit:Merge*",
+              + "codecommit:PostCommentForPullRequest",
+              + "codecommit:UpdatePullRequestApprovalState",
+              + "codecommit:UpdatePullRequestStatus",
+            ]
+          + effect    = "Allow"
+          + resources = [
+              + (known after apply),
+              + (known after apply),
+              + (known after apply),
+            ]
+        }
+    }
+
+  # aws_cloudwatch_event_rule.build["development"] will be created
+  + resource "aws_cloudwatch_event_rule" "build" {
+      + arn            = (known after apply)
+      + description    = "initiates build execution environment on PR merge"
+      + event_bus_name = "default"
+      + event_pattern  = (known after apply)
+      + force_destroy  = false
+      + id             = (known after apply)
+      + name           = "mmv5x1-development-codebuild-merge-rule"
+      + name_prefix    = (known after apply)
+      + role_arn       = (known after apply)
+      + tags_all       = (known after apply)
+    }
+
+  # aws_cloudwatch_event_rule.build["production"] will be created
+  + resource "aws_cloudwatch_event_rule" "build" {
+      + arn            = (known after apply)
+      + description    = "initiates build execution environment on PR merge"
+      + event_bus_name = "default"
+      + event_pattern  = (known after apply)
+      + force_destroy  = false
+      + id             = (known after apply)
+      + name           = "mmv5x1-production-codebuild-merge-rule"
+      + name_prefix    = (known after apply)
+      + role_arn       = (known after apply)
+      + tags_all       = (known after apply)
+    }
+
+  # aws_cloudwatch_event_rule.build["testing"] will be created
+  + resource "aws_cloudwatch_event_rule" "build" {
+      + arn            = (known after apply)
+      + description    = "initiates build execution environment on PR merge"
+      + event_bus_name = "default"
+      + event_pattern  = (known after apply)
+      + force_destroy  = false
+      + id             = (known after apply)
+      + name           = "mmv5x1-testing-codebuild-merge-rule"
+      + name_prefix    = (known after apply)
+      + role_arn       = (known after apply)
+      + tags_all       = (known after apply)
+    }
+
+  # aws_cloudwatch_event_rule.lambda["development"] will be created
+  + resource "aws_cloudwatch_event_rule" "lambda" {
+      + arn            = (known after apply)
+      + description    = "initiates lambda function on codebuild test execution outcome"
+      + event_bus_name = "default"
+      + event_pattern  = jsonencode(
+            {
+              + detail      = {
+                  + project-name = [
+                      + "mmv5x1-development-pr",
+                    ]
+                }
+              + detail-type = [
+                  + "CodeBuild Build State Change",
+                ]
+              + source      = [
+                  + "aws.codebuild",
+                ]
+            }
+        )
+      + force_destroy  = false
+      + id             = (known after apply)
+      + name           = "mmv5x1-development-lamda-execution"
+      + name_prefix    = (known after apply)
+      + role_arn       = (known after apply)
+      + tags_all       = (known after apply)
+    }
+
+  # aws_cloudwatch_event_rule.lambda["production"] will be created
+  + resource "aws_cloudwatch_event_rule" "lambda" {
+      + arn            = (known after apply)
+      + description    = "initiates lambda function on codebuild test execution outcome"
+      + event_bus_name = "default"
+      + event_pattern  = jsonencode(
+            {
+              + detail      = {
+                  + project-name = [
+                      + "mmv5x1-production-pr",
+                    ]
+                }
+              + detail-type = [
+                  + "CodeBuild Build State Change",
+                ]
+              + source      = [
+                  + "aws.codebuild",
+                ]
+            }
+        )
+      + force_destroy  = false
+      + id             = (known after apply)
+      + name           = "mmv5x1-production-lamda-execution"
+      + name_prefix    = (known after apply)
+      + role_arn       = (known after apply)
+      + tags_all       = (known after apply)
+    }
+
+  # aws_cloudwatch_event_rule.lambda["testing"] will be created
+  + resource "aws_cloudwatch_event_rule" "lambda" {
+      + arn            = (known after apply)
+      + description    = "initiates lambda function on codebuild test execution outcome"
+      + event_bus_name = "default"
+      + event_pattern  = jsonencode(
+            {
+              + detail      = {
+                  + project-name = [
+                      + "mmv5x1-testing-pr",
+                    ]
+                }
+              + detail-type = [
+                  + "CodeBuild Build State Change",
+                ]
+              + source      = [
+                  + "aws.codebuild",
+                ]
+            }
+        )
+      + force_destroy  = false
+      + id             = (known after apply)
+      + name           = "mmv5x1-testing-lamda-execution"
+      + name_prefix    = (known after apply)
+      + role_arn       = (known after apply)
+      + tags_all       = (known after apply)
+    }
+
+  # aws_cloudwatch_event_rule.pr["development"] will be created
+  + resource "aws_cloudwatch_event_rule" "pr" {
+      + arn            = (known after apply)
+      + description    = "initiates test execution environment on PR merge"
+      + event_bus_name = "default"
+      + event_pattern  = (known after apply)
+      + force_destroy  = false
+      + id             = (known after apply)
+      + name           = "mmv5x1-development-codebuild-pr-rule"
+      + name_prefix    = (known after apply)
+      + role_arn       = (known after apply)
+      + tags_all       = (known after apply)
+    }
+
+  # aws_cloudwatch_event_rule.pr["production"] will be created
+  + resource "aws_cloudwatch_event_rule" "pr" {
+      + arn            = (known after apply)
+      + description    = "initiates test execution environment on PR merge"
+      + event_bus_name = "default"
+      + event_pattern  = (known after apply)
+      + force_destroy  = false
+      + id             = (known after apply)
+      + name           = "mmv5x1-production-codebuild-pr-rule"
+      + name_prefix    = (known after apply)
+      + role_arn       = (known after apply)
+      + tags_all       = (known after apply)
+    }
+
+  # aws_cloudwatch_event_rule.pr["testing"] will be created
+  + resource "aws_cloudwatch_event_rule" "pr" {
+      + arn            = (known after apply)
+      + description    = "initiates test execution environment on PR merge"
+      + event_bus_name = "default"
+      + event_pattern  = (known after apply)
+      + force_destroy  = false
+      + id             = (known after apply)
+      + name           = "mmv5x1-testing-codebuild-pr-rule"
+      + name_prefix    = (known after apply)
+      + role_arn       = (known after apply)
+      + tags_all       = (known after apply)
+    }
+
+  # aws_cloudwatch_event_target.build["development"] will be created
+  + resource "aws_cloudwatch_event_target" "build" {
+      + arn            = (known after apply)
+      + event_bus_name = "default"
+      + force_destroy  = false
+      + id             = (known after apply)
+      + role_arn       = (known after apply)
+      + rule           = "mmv5x1-development-codebuild-merge-rule"
+      + target_id      = (known after apply)
+    }
+
+  # aws_cloudwatch_event_target.build["production"] will be created
+  + resource "aws_cloudwatch_event_target" "build" {
+      + arn            = (known after apply)
+      + event_bus_name = "default"
+      + force_destroy  = false
+      + id             = (known after apply)
+      + role_arn       = (known after apply)
+      + rule           = "mmv5x1-production-codebuild-merge-rule"
+      + target_id      = (known after apply)
+    }
+
+  # aws_cloudwatch_event_target.build["testing"] will be created
+  + resource "aws_cloudwatch_event_target" "build" {
+      + arn            = (known after apply)
+      + event_bus_name = "default"
+      + force_destroy  = false
+      + id             = (known after apply)
+      + role_arn       = (known after apply)
+      + rule           = "mmv5x1-testing-codebuild-merge-rule"
+      + target_id      = (known after apply)
+    }
+
+  # aws_cloudwatch_event_target.lambda["development"] will be created
+  + resource "aws_cloudwatch_event_target" "lambda" {
+      + arn            = (known after apply)
+      + event_bus_name = "default"
+      + force_destroy  = false
+      + id             = (known after apply)
+      + rule           = (known after apply)
+      + target_id      = (known after apply)
+    }
+
+  # aws_cloudwatch_event_target.lambda["production"] will be created
+  + resource "aws_cloudwatch_event_target" "lambda" {
+      + arn            = (known after apply)
+      + event_bus_name = "default"
+      + force_destroy  = false
+      + id             = (known after apply)
+      + rule           = (known after apply)
+      + target_id      = (known after apply)
+    }
+
+  # aws_cloudwatch_event_target.lambda["testing"] will be created
+  + resource "aws_cloudwatch_event_target" "lambda" {
+      + arn            = (known after apply)
+      + event_bus_name = "default"
+      + force_destroy  = false
+      + id             = (known after apply)
+      + rule           = (known after apply)
+      + target_id      = (known after apply)
+    }
+
+  # aws_cloudwatch_event_target.pr["development"] will be created
+  + resource "aws_cloudwatch_event_target" "pr" {
+      + arn            = (known after apply)
+      + event_bus_name = "default"
+      + force_destroy  = false
+      + id             = (known after apply)
+      + role_arn       = (known after apply)
+      + rule           = "mmv5x1-development-codebuild-pr-rule"
+      + target_id      = (known after apply)
+
+      + input_transformer {
+          + input_paths    = {
+              + "detail-destinationCommit"  = "$.detail.destinationCommit"
+              + "detail-pullRequestId"      = "$.detail.pullRequestId"
+              + "detail-repositoryNames-0-" = "$.detail.repositoryNames[0]"
+              + "detail-revisionId"         = "$.detail.revisionId"
+              + "detail-sourceCommit"       = "$.detail.sourceCommit"
+            }
+          + input_template = <<-EOT
+                {"sourceIdentifier":<detail-repositoryNames-0->,"sourceVersion":<detail-sourceCommit>,"artifactsOverride":{"type":"NO_ARTIFACTS"},"environmentVariablesOverride":[{"name":"PULL_REQUEST_ID","value":<detail-pullRequestId>,"type":"PLAINTEXT"},{"name":"REPOSITORY_NAME","value":<detail-repositoryNames-0->,"type":"PLAINTEXT"},{"name":"SOURCE_COMMIT","value":<detail-sourceCommit>,"type":"PLAINTEXT"},{"name":"DESTINATION_COMMIT","value":<detail-destinationCommit>,"type":"PLAINTEXT"},{"name":"REVISION_ID","value":<detail-revisionId>,"type":"PLAINTEXT"}]}
+            EOT
+        }
+    }
+
+  # aws_cloudwatch_event_target.pr["production"] will be created
+  + resource "aws_cloudwatch_event_target" "pr" {
+      + arn            = (known after apply)
+      + event_bus_name = "default"
+      + force_destroy  = false
+      + id             = (known after apply)
+      + role_arn       = (known after apply)
+      + rule           = "mmv5x1-production-codebuild-pr-rule"
+      + target_id      = (known after apply)
+
+      + input_transformer {
+          + input_paths    = {
+              + "detail-destinationCommit"  = "$.detail.destinationCommit"
+              + "detail-pullRequestId"      = "$.detail.pullRequestId"
+              + "detail-repositoryNames-0-" = "$.detail.repositoryNames[0]"
+              + "detail-revisionId"         = "$.detail.revisionId"
+              + "detail-sourceCommit"       = "$.detail.sourceCommit"
+            }
+          + input_template = <<-EOT
+                {"sourceIdentifier":<detail-repositoryNames-0->,"sourceVersion":<detail-sourceCommit>,"artifactsOverride":{"type":"NO_ARTIFACTS"},"environmentVariablesOverride":[{"name":"PULL_REQUEST_ID","value":<detail-pullRequestId>,"type":"PLAINTEXT"},{"name":"REPOSITORY_NAME","value":<detail-repositoryNames-0->,"type":"PLAINTEXT"},{"name":"SOURCE_COMMIT","value":<detail-sourceCommit>,"type":"PLAINTEXT"},{"name":"DESTINATION_COMMIT","value":<detail-destinationCommit>,"type":"PLAINTEXT"},{"name":"REVISION_ID","value":<detail-revisionId>,"type":"PLAINTEXT"}]}
+            EOT
+        }
+    }
+
+  # aws_cloudwatch_event_target.pr["testing"] will be created
+  + resource "aws_cloudwatch_event_target" "pr" {
+      + arn            = (known after apply)
+      + event_bus_name = "default"
+      + force_destroy  = false
+      + id             = (known after apply)
+      + role_arn       = (known after apply)
+      + rule           = "mmv5x1-testing-codebuild-pr-rule"
+      + target_id      = (known after apply)
+
+      + input_transformer {
+          + input_paths    = {
+              + "detail-destinationCommit"  = "$.detail.destinationCommit"
+              + "detail-pullRequestId"      = "$.detail.pullRequestId"
+              + "detail-repositoryNames-0-" = "$.detail.repositoryNames[0]"
+              + "detail-revisionId"         = "$.detail.revisionId"
+              + "detail-sourceCommit"       = "$.detail.sourceCommit"
+            }
+          + input_template = <<-EOT
+                {"sourceIdentifier":<detail-repositoryNames-0->,"sourceVersion":<detail-sourceCommit>,"artifactsOverride":{"type":"NO_ARTIFACTS"},"environmentVariablesOverride":[{"name":"PULL_REQUEST_ID","value":<detail-pullRequestId>,"type":"PLAINTEXT"},{"name":"REPOSITORY_NAME","value":<detail-repositoryNames-0->,"type":"PLAINTEXT"},{"name":"SOURCE_COMMIT","value":<detail-sourceCommit>,"type":"PLAINTEXT"},{"name":"DESTINATION_COMMIT","value":<detail-destinationCommit>,"type":"PLAINTEXT"},{"name":"REVISION_ID","value":<detail-revisionId>,"type":"PLAINTEXT"}]}
+            EOT
+        }
+    }
+
+  # aws_codebuild_project.build["development"] will be created
+  + resource "aws_codebuild_project" "build" {
+      + arn                  = (known after apply)
+      + badge_enabled        = false
+      + badge_url            = (known after apply)
+      + build_timeout        = 5
+      + description          = "development build execution environment"
+      + encryption_key       = (known after apply)
+      + id                   = (known after apply)
+      + name                 = "mmv5x1-development-build"
+      + project_visibility   = "PRIVATE"
+      + public_project_alias = (known after apply)
+      + queued_timeout       = 480
+      + service_role         = (known after apply)
+      + source_version       = "main"
+      + tags_all             = (known after apply)
+
+      + artifacts {
+          + encryption_disabled    = false
+          + override_artifact_name = false
+          + type                   = "NO_ARTIFACTS"
+        }
+
+      + environment {
+          + compute_type                = "BUILD_GENERAL1_SMALL"
+          + image                       = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+          + image_pull_credentials_type = "CODEBUILD"
+          + privileged_mode             = false
+          + type                        = "LINUX_CONTAINER"
+        }
+
+      + logs_config {
+          + cloudwatch_logs {
+              + group_name  = "log-group"
+              + status      = "ENABLED"
+              + stream_name = "log-stream"
+            }
+        }
+
+      + source {
+          + buildspec       = ".codepipeline/buildspec-build.yaml"
+          + git_clone_depth = 1
+          + location        = (known after apply)
+          + type            = "CODECOMMIT"
+        }
+    }
+
+  # aws_codebuild_project.build["production"] will be created
+  + resource "aws_codebuild_project" "build" {
+      + arn                  = (known after apply)
+      + badge_enabled        = false
+      + badge_url            = (known after apply)
+      + build_timeout        = 5
+      + description          = "production build execution environment"
+      + encryption_key       = (known after apply)
+      + id                   = (known after apply)
+      + name                 = "mmv5x1-production-build"
+      + project_visibility   = "PRIVATE"
+      + public_project_alias = (known after apply)
+      + queued_timeout       = 480
+      + service_role         = (known after apply)
+      + source_version       = "main"
+      + tags_all             = (known after apply)
+
+      + artifacts {
+          + encryption_disabled    = false
+          + override_artifact_name = false
+          + type                   = "NO_ARTIFACTS"
+        }
+
+      + environment {
+          + compute_type                = "BUILD_GENERAL1_SMALL"
+          + image                       = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+          + image_pull_credentials_type = "CODEBUILD"
+          + privileged_mode             = false
+          + type                        = "LINUX_CONTAINER"
+        }
+
+      + logs_config {
+          + cloudwatch_logs {
+              + group_name  = "log-group"
+              + status      = "ENABLED"
+              + stream_name = "log-stream"
+            }
+        }
+
+      + source {
+          + buildspec       = ".codepipeline/buildspec-build.yaml"
+          + git_clone_depth = 1
+          + location        = (known after apply)
+          + type            = "CODECOMMIT"
+        }
+    }
+
+  # aws_codebuild_project.build["testing"] will be created
+  + resource "aws_codebuild_project" "build" {
+      + arn                  = (known after apply)
+      + badge_enabled        = false
+      + badge_url            = (known after apply)
+      + build_timeout        = 5
+      + description          = "testing build execution environment"
+      + encryption_key       = (known after apply)
+      + id                   = (known after apply)
+      + name                 = "mmv5x1-testing-build"
+      + project_visibility   = "PRIVATE"
+      + public_project_alias = (known after apply)
+      + queued_timeout       = 480
+      + service_role         = (known after apply)
+      + source_version       = "main"
+      + tags_all             = (known after apply)
+
+      + artifacts {
+          + encryption_disabled    = false
+          + override_artifact_name = false
+          + type                   = "NO_ARTIFACTS"
+        }
+
+      + environment {
+          + compute_type                = "BUILD_GENERAL1_SMALL"
+          + image                       = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+          + image_pull_credentials_type = "CODEBUILD"
+          + privileged_mode             = false
+          + type                        = "LINUX_CONTAINER"
+        }
+
+      + logs_config {
+          + cloudwatch_logs {
+              + group_name  = "log-group"
+              + status      = "ENABLED"
+              + stream_name = "log-stream"
+            }
+        }
+
+      + source {
+          + buildspec       = ".codepipeline/buildspec-build.yaml"
+          + git_clone_depth = 1
+          + location        = (known after apply)
+          + type            = "CODECOMMIT"
+        }
+    }
+
+  # aws_codebuild_project.pr["development"] will be created
+  + resource "aws_codebuild_project" "pr" {
+      + arn                  = (known after apply)
+      + badge_enabled        = false
+      + badge_url            = (known after apply)
+      + build_timeout        = 5
+      + description          = "development pr execution environment"
+      + encryption_key       = (known after apply)
+      + id                   = (known after apply)
+      + name                 = "mmv5x1-development-pr"
+      + project_visibility   = "PRIVATE"
+      + public_project_alias = (known after apply)
+      + queued_timeout       = 480
+      + service_role         = (known after apply)
+      + source_version       = "main"
+      + tags_all             = (known after apply)
+
+      + artifacts {
+          + encryption_disabled    = false
+          + override_artifact_name = false
+          + type                   = "NO_ARTIFACTS"
+        }
+
+      + environment {
+          + compute_type                = "BUILD_GENERAL1_SMALL"
+          + image                       = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+          + image_pull_credentials_type = "CODEBUILD"
+          + privileged_mode             = false
+          + type                        = "LINUX_CONTAINER"
+        }
+
+      + logs_config {
+          + cloudwatch_logs {
+              + group_name  = "log-group"
+              + status      = "ENABLED"
+              + stream_name = "log-stream"
+            }
+        }
+
+      + source {
+          + buildspec       = ".codepipeline/buildspec-pr.yaml"
+          + git_clone_depth = 1
+          + location        = (known after apply)
+          + type            = "CODECOMMIT"
+        }
+    }
+
+  # aws_codebuild_project.pr["production"] will be created
+  + resource "aws_codebuild_project" "pr" {
+      + arn                  = (known after apply)
+      + badge_enabled        = false
+      + badge_url            = (known after apply)
+      + build_timeout        = 5
+      + description          = "production pr execution environment"
+      + encryption_key       = (known after apply)
+      + id                   = (known after apply)
+      + name                 = "mmv5x1-production-pr"
+      + project_visibility   = "PRIVATE"
+      + public_project_alias = (known after apply)
+      + queued_timeout       = 480
+      + service_role         = (known after apply)
+      + source_version       = "main"
+      + tags_all             = (known after apply)
+
+      + artifacts {
+          + encryption_disabled    = false
+          + override_artifact_name = false
+          + type                   = "NO_ARTIFACTS"
+        }
+
+      + environment {
+          + compute_type                = "BUILD_GENERAL1_SMALL"
+          + image                       = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+          + image_pull_credentials_type = "CODEBUILD"
+          + privileged_mode             = false
+          + type                        = "LINUX_CONTAINER"
+        }
+
+      + logs_config {
+          + cloudwatch_logs {
+              + group_name  = "log-group"
+              + status      = "ENABLED"
+              + stream_name = "log-stream"
+            }
+        }
+
+      + source {
+          + buildspec       = ".codepipeline/buildspec-pr.yaml"
+          + git_clone_depth = 1
+          + location        = (known after apply)
+          + type            = "CODECOMMIT"
+        }
+    }
+
+  # aws_codebuild_project.pr["testing"] will be created
+  + resource "aws_codebuild_project" "pr" {
+      + arn                  = (known after apply)
+      + badge_enabled        = false
+      + badge_url            = (known after apply)
+      + build_timeout        = 5
+      + description          = "testing pr execution environment"
+      + encryption_key       = (known after apply)
+      + id                   = (known after apply)
+      + name                 = "mmv5x1-testing-pr"
+      + project_visibility   = "PRIVATE"
+      + public_project_alias = (known after apply)
+      + queued_timeout       = 480
+      + service_role         = (known after apply)
+      + source_version       = "main"
+      + tags_all             = (known after apply)
+
+      + artifacts {
+          + encryption_disabled    = false
+          + override_artifact_name = false
+          + type                   = "NO_ARTIFACTS"
+        }
+
+      + environment {
+          + compute_type                = "BUILD_GENERAL1_SMALL"
+          + image                       = "aws/codebuild/amazonlinux2-x86_64-standard:4.0"
+          + image_pull_credentials_type = "CODEBUILD"
+          + privileged_mode             = false
+          + type                        = "LINUX_CONTAINER"
+        }
+
+      + logs_config {
+          + cloudwatch_logs {
+              + group_name  = "log-group"
+              + status      = "ENABLED"
+              + stream_name = "log-stream"
+            }
+        }
+
+      + source {
+          + buildspec       = ".codepipeline/buildspec-pr.yaml"
+          + git_clone_depth = 1
+          + location        = (known after apply)
+          + type            = "CODECOMMIT"
+        }
+    }
+
+  # aws_codecommit_approval_rule_template.automatic will be created
+  + resource "aws_codecommit_approval_rule_template" "automatic" {
+      + approval_rule_template_id = (known after apply)
+      + content                   = (known after apply)
+      + creation_date             = (known after apply)
+      + description               = "approval rule template for lambda function "
+      + id                        = (known after apply)
+      + last_modified_date        = (known after apply)
+      + last_modified_user        = (known after apply)
+      + name                      = "lambda-automatic-approvals-mmv5x1"
+      + rule_content_sha256       = (known after apply)
+    }
+
+  # aws_codecommit_approval_rule_template_association.this["ferrari-mmv5x1-development-lambda-automatic-approvals-mmv5x1"] will be created
+  + resource "aws_codecommit_approval_rule_template_association" "this" {
+      + approval_rule_template_name = "lambda-automatic-approvals-mmv5x1"
+      + id                          = (known after apply)
+      + repository_name             = "ferrari-mmv5x1-development"
+    }
+
+  # aws_codecommit_approval_rule_template_association.this["ferrari-mmv5x1-production-lambda-automatic-approvals-mmv5x1"] will be created
+  + resource "aws_codecommit_approval_rule_template_association" "this" {
+      + approval_rule_template_name = "lambda-automatic-approvals-mmv5x1"
+      + id                          = (known after apply)
+      + repository_name             = "ferrari-mmv5x1-production"
+    }
+
+  # aws_codecommit_approval_rule_template_association.this["ferrari-mmv5x1-testing-lambda-automatic-approvals-mmv5x1"] will be created
+  + resource "aws_codecommit_approval_rule_template_association" "this" {
+      + approval_rule_template_name = "lambda-automatic-approvals-mmv5x1"
+      + id                          = (known after apply)
+      + repository_name             = "ferrari-mmv5x1-testing"
+    }
+
+  # aws_codecommit_repository.this["development"] will be created
+  + resource "aws_codecommit_repository" "this" {
+      + arn             = (known after apply)
+      + clone_url_http  = (known after apply)
+      + clone_url_ssh   = (known after apply)
+      + description     = "development repository"
+      + id              = (known after apply)
+      + kms_key_id      = (known after apply)
+      + repository_id   = (known after apply)
+      + repository_name = "ferrari-mmv5x1-development"
+      + tags_all        = (known after apply)
+    }
+
+  # aws_codecommit_repository.this["production"] will be created
+  + resource "aws_codecommit_repository" "this" {
+      + arn             = (known after apply)
+      + clone_url_http  = (known after apply)
+      + clone_url_ssh   = (known after apply)
+      + description     = "production repository"
+      + id              = (known after apply)
+      + kms_key_id      = (known after apply)
+      + repository_id   = (known after apply)
+      + repository_name = "ferrari-mmv5x1-production"
+      + tags_all        = (known after apply)
+    }
+
+  # aws_codecommit_repository.this["testing"] will be created
+  + resource "aws_codecommit_repository" "this" {
+      + arn             = (known after apply)
+      + clone_url_http  = (known after apply)
+      + clone_url_ssh   = (known after apply)
+      + description     = "testing repository"
+      + id              = (known after apply)
+      + kms_key_id      = (known after apply)
+      + repository_id   = (known after apply)
+      + repository_name = "ferrari-mmv5x1-testing"
+      + tags_all        = (known after apply)
+    }
+
+  # aws_iam_policy.cicd will be created
+  + resource "aws_iam_policy" "cicd" {
+      + arn              = (known after apply)
+      + attachment_count = (known after apply)
+      + description      = "cicd policy"
+      + id               = (known after apply)
+      + name             = "cicd-automation-mmv5x1-policy"
+      + name_prefix      = (known after apply)
+      + path             = "/"
+      + policy           = (known after apply)
+      + policy_id        = (known after apply)
+      + tags_all         = (known after apply)
+    }
+
+  # aws_iam_policy.reviewers will be created
+  + resource "aws_iam_policy" "reviewers" {
+      + arn              = (known after apply)
+      + attachment_count = (known after apply)
+      + description      = "code reviewers policy for cicd"
+      + id               = (known after apply)
+      + name             = "code-reviewers-mmv5x1-policy"
+      + name_prefix      = (known after apply)
+      + path             = "/"
+      + policy           = (known after apply)
+      + policy_id        = (known after apply)
+      + tags_all         = (known after apply)
+    }
+
+  # aws_iam_policy_attachment.cicd will be created
+  + resource "aws_iam_policy_attachment" "cicd" {
+      + id         = (known after apply)
+      + name       = "cicd-automation-mmv5x1-attachment"
+      + policy_arn = (known after apply)
+      + roles      = [
+          + "cicd-automation-mmv5x1",
+        ]
+    }
+
+  # aws_iam_role.cicd will be created
+  + resource "aws_iam_role" "cicd" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = [
+                              + "lambda.amazonaws.com",
+                              + "events.amazonaws.com",
+                              + "codebuild.amazonaws.com",
+                            ]
+                        }
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "cicd-automation-mmv5x1"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags_all              = (known after apply)
+      + unique_id             = (known after apply)
+    }
+
+  # aws_lambda_function.lambda will be created
+  + resource "aws_lambda_function" "lambda" {
+      + architectures                  = (known after apply)
+      + arn                            = (known after apply)
+      + code_sha256                    = (known after apply)
+      + filename                       = "lambda_function_payload.zip"
+      + function_name                  = "PullRequestAutomation-mmv5x1"
+      + handler                        = "handler-automatic-close-and-merge.lambda_handler"
+      + id                             = (known after apply)
+      + invoke_arn                     = (known after apply)
+      + last_modified                  = (known after apply)
+      + memory_size                    = 128
+      + package_type                   = "Zip"
+      + publish                        = false
+      + qualified_arn                  = (known after apply)
+      + qualified_invoke_arn           = (known after apply)
+      + reserved_concurrent_executions = -1
+      + role                           = (known after apply)
+      + runtime                        = "python3.9"
+      + signing_job_arn                = (known after apply)
+      + signing_profile_version_arn    = (known after apply)
+      + skip_destroy                   = false
+      + source_code_hash               = (known after apply)
+      + source_code_size               = (known after apply)
+      + tags_all                       = (known after apply)
+      + timeout                        = 3
+      + version                        = (known after apply)
+    }
+
+  # aws_lambda_permission.invoke["development"] will be created
+  + resource "aws_lambda_permission" "invoke" {
+      + action              = "lambda:InvokeFunction"
+      + function_name       = "PullRequestAutomation-mmv5x1"
+      + id                  = (known after apply)
+      + principal           = "events.amazonaws.com"
+      + source_arn          = (known after apply)
+      + statement_id        = (known after apply)
+      + statement_id_prefix = (known after apply)
+    }
+
+  # aws_lambda_permission.invoke["production"] will be created
+  + resource "aws_lambda_permission" "invoke" {
+      + action              = "lambda:InvokeFunction"
+      + function_name       = "PullRequestAutomation-mmv5x1"
+      + id                  = (known after apply)
+      + principal           = "events.amazonaws.com"
+      + source_arn          = (known after apply)
+      + statement_id        = (known after apply)
+      + statement_id_prefix = (known after apply)
+    }
+
+  # aws_lambda_permission.invoke["testing"] will be created
+  + resource "aws_lambda_permission" "invoke" {
+      + action              = "lambda:InvokeFunction"
+      + function_name       = "PullRequestAutomation-mmv5x1"
+      + id                  = (known after apply)
+      + principal           = "events.amazonaws.com"
+      + source_arn          = (known after apply)
+      + statement_id        = (known after apply)
+      + statement_id_prefix = (known after apply)
+    }
+
+Plan: 39 to add, 0 to change, 0 to destroy.

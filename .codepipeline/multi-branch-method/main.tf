@@ -6,77 +6,78 @@
 #   ▀▀▀·▀▀▀▀ ▀▀  █▪▀▀▀     ▀▀▀▀ .▀    ▀█▄▀▪.▀  ▀ ▀▀▀  ▀▀▀▀ 
 #       ---------------------------------------------
 ## >> .summary
-# builds out multiple AWS codecommit repositories with 2 stage codebuild and a single 
+# builds out a single AWS codecommit repository with multiple branche support, includes 2 stage codebuild and a single 
 # shared lambda function for enabling CICD automation in codecommit.
+
+# define locals
+locals {
+  repositories                 = aws_codecommit_repository.this.repository_name
+  approval_templates_reviewers = values(aws_codecommit_approval_rule_template.reviewers)[*].name
+  default_branch               = one(try([ for val in local.branches_deploy : val.id if(val.default == true)]))
+  branch_list                  = [for val in local.branches_deploy : val.id]
+  approval_templates           = concat(local.approval_templates_reviewers, [tostring(aws_codecommit_approval_rule_template.cicd.name)])
+  template_associations_input  = setproduct([local.repositories], local.approval_templates)
+  template_associations = [
+    for item in local.template_associations_input : merge({ repo = item[0] }, { template = item[1] })
+  ]
+}
 
 # codecommit repo
 resource "aws_codecommit_repository" "this" {
-  for_each        = { for entry in local.repositories_deploy : "${entry.id}" => entry }
-  repository_name = "${local.full_resource_prefix}-${each.value.name}"
-  description     = "${each.value.name} repository"
+  repository_name = "${local.full_resource_prefix}-${local.repository_name}"
+  description     = "${local.repository_name} repository"
 }
-
-# Populate Repositories
-resource "null_resource" "populate_repos" {
-  for_each        = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+# local exec to create branches, set default? and remove main.
+resource "null_resource" "create_branches" {
   provisioner "local-exec" {
     command = "branch_setup.sh"
     interpreter= ["/bin/bash", "-e"]
     environment = {
       REGION = local.region
-      REPOSITORY_NAME = aws_codecommit_repository.this[each.value.id].repository_name
+      REPOSITORY_NAME = aws_codecommit_repository.this.repository_name
+      BRANCHES = join(" ", local.branch_list)
+      DEFAULT_BRANCH = local.default_branch
     }
   }
 }
-
 # codecommit repo Rules
 resource "aws_codecommit_approval_rule_template" "cicd" {
   name        = "PullRequestAutomation-${local.project_uid}"
   description = "Approval rule template for CICD Lambda function "
-
   content = jsonencode({
     Version               = "2018-11-08"
-    DestinationReferences = ["refs/heads/main"]
+    DestinationReferences = [for i in local.branches_deploy : "refs/heads/${i.id}"]
     Statements = [{
       Type                    = "Approvers"
       NumberOfApprovalsNeeded = 1
       ApprovalPoolMembers     = ["arn:aws:sts::${data.aws_caller_identity.source.account_id}:assumed-role/${aws_iam_role.cicd.id}/*"]
     }]
   })
+  depends_on = [ null_resource.create_branches ]
 }
 
 resource "aws_codecommit_approval_rule_template" "reviewers" {
   for_each    = { for entry in local.approval_templates_deploy : "${entry.id}" => entry }
-  name        = "${each.value.name}-${local.project_uid}"
+  name        = "${local.full_resource_prefix}-${each.value.name}"
   description = "additional approval rule template for use across multiple repositories"
-
   content = jsonencode({
     Version               = "2018-11-08"
-    DestinationReferences = ["refs/heads/main"]
+    DestinationReferences = [for i in each.value.target_branches : "refs/heads/${i}"]
     Statements = [{
       Type                    = "Approvers"
       NumberOfApprovalsNeeded = each.value.approvals_needed
-      ApprovalPoolMembers     = [for i in each.value.pool_members : "arn:aws:sts::${data.aws_caller_identity.source.account_id}:assumed-role/${i.id}/*"]
+      ApprovalPoolMembers     = [for i in each.value.pool_members : "arn:aws:sts::${data.aws_caller_identity.source.account_id}:assumed-role/${i}/*"]
 
     }]
   })
-}
-
-# Parsing for Codecommit 
-locals {
-  repositories                 = values(aws_codecommit_repository.this)[*].repository_name
-  approval_templates_reviewers = values(aws_codecommit_approval_rule_template.reviewers)[*].name
-  approval_templates           = concat(local.approval_templates_reviewers, [tostring(aws_codecommit_approval_rule_template.cicd.name)])
-  template_associations_input  = setproduct(local.repositories, local.approval_templates)
-  template_associations = [
-    for item in local.template_associations_input : merge({ repo = item[0] }, { template = item[1] })
-  ]
+  depends_on = [ null_resource.create_branches ]
 }
 
 resource "aws_codecommit_approval_rule_template_association" "this" {
   for_each                    = { for i in local.template_associations : "${i.repo}-${i.template}" => i }
   approval_rule_template_name = each.value.template
-  repository_name             = each.value.repo
+  repository_name             = aws_codecommit_repository.this.repository_name
+  depends_on                  = [ null_resource.create_branches ]
 }
 
 data "aws_caller_identity" "source" {
@@ -161,7 +162,7 @@ data "aws_iam_policy_document" "cicd" {
   }
   statement {
     effect = "Allow"
-    resources = [for i in values(aws_codecommit_repository.this)[*] : i.arn]
+    resources = ["${aws_codecommit_repository.this.arn}"]
     actions = [
       "codecommit:UpdatePullRequestApprovalState",
       "codecommit:UpdatePullRequestStatus",
@@ -196,16 +197,16 @@ data "aws_iam_policy_document" "cicd" {
       ]
   }
 }
-
 # codebuild - test execution environment triggers
 resource "aws_cloudwatch_event_rule" "pr" {
-  for_each    = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+  for_each    = { for entry in local.branches_deploy : "${entry.id}" => entry }
   name        = "${local.project_uid}-${each.value.name}-codebuild-pr-rule"
-  description = "initiates test execution environment on PR merge"
+  description = "initiates test execution environment on PR"
 
   event_pattern = jsonencode({
-    resources = [tostring(aws_codecommit_repository.this["${each.value.id}"].arn)]
+    resources = [tostring(aws_codecommit_repository.this.arn)]
     detail = {
+      destinationReference = ["refs/heads/${each.value.id}"],
       event = ["pullRequestCreated", "pullRequestSourceBranchUpdated"]
     }
     source = ["aws.codecommit"]
@@ -214,7 +215,7 @@ resource "aws_cloudwatch_event_rule" "pr" {
 }
 
 resource "aws_cloudwatch_event_target" "pr" {
-  for_each = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+  for_each = { for entry in local.branches_deploy : "${entry.id}" => entry }
   rule     = aws_cloudwatch_event_rule.pr["${each.value.id}"].name
   arn      = aws_codebuild_project.pr["${each.value.id}"].arn
   role_arn  = aws_iam_role.cicd.arn
@@ -234,7 +235,7 @@ EOF
 
 # codebuild - test phase
 resource "aws_codebuild_project" "pr" {
-  for_each      = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+  for_each      = { for entry in local.branches_deploy : "${entry.id}" => entry }
   name          = "${local.project_uid}-${each.value.name}-pr"
   description   = "${each.value.name} pr execution environment"
   build_timeout = 5
@@ -257,16 +258,16 @@ resource "aws_codebuild_project" "pr" {
   }
   source {
     type            = "CODECOMMIT"
-    location        = aws_codecommit_repository.this["${each.value.id}"].clone_url_http
+    location        = aws_codecommit_repository.this.clone_url_http
     git_clone_depth = 1
     buildspec       = "buildspec-pr.yaml"
   }
-  source_version = "main"
+  source_version = "refs/heads/${each.value.id}"
 }
 
 # codebuild - lambda execution triggers
 resource "aws_cloudwatch_event_rule" "lambda" {
-  for_each = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+  for_each = { for entry in local.branches_deploy : "${entry.id}" => entry }
   name     = "${local.project_uid}-${each.value.name}-lamda-execution"
 
   description = "initiates lambda function on codebuild test execution outcome"
@@ -281,7 +282,7 @@ resource "aws_cloudwatch_event_rule" "lambda" {
   role_arn = aws_iam_role.cicd.arn
 }
 resource "aws_cloudwatch_event_target" "lambda" {
-  for_each = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+  for_each = { for entry in local.branches_deploy : "${entry.id}" => entry }
   rule     = aws_cloudwatch_event_rule.lambda["${each.value.id}"].id
   arn      = aws_lambda_function.lambda.arn
   #role_arn = aws_iam_role.cicd.arn
@@ -295,7 +296,7 @@ data "archive_file" "lambda" {
   output_path = "lambda_function_payload.zip"
 }
 resource "aws_lambda_permission" "invoke" {
-  for_each = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+  for_each = { for entry in local.branches_deploy : "${entry.id}" => entry }
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.lambda.function_name
   principal     = "events.amazonaws.com"
@@ -313,13 +314,15 @@ resource "aws_lambda_function" "lambda" {
 
 # codebuild - build exeuction environment triggers #TODO
 resource "aws_cloudwatch_event_rule" "build" {
-  for_each    = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+  for_each    = { for entry in local.branches_deploy : "${entry.id}" => entry }
   name        = "${local.project_uid}-${each.value.name}-codebuild-merge-rule"
   description = "initiates build execution environment on PR merge"
 
   event_pattern = jsonencode({
-    resources = [tostring(aws_codecommit_repository.this["${each.value.id}"].arn)]
+    resources = [tostring(aws_codecommit_repository.this.arn)]
     detail = {
+    #  referenceName = ["${each.value.id}"],
+      destinationReference = ["refs/heads/${each.value.id}"],
       event = ["pullRequestMergeStatusUpdated"],
       isMerged = ["True"]
     }
@@ -329,7 +332,7 @@ resource "aws_cloudwatch_event_rule" "build" {
 }
 
 resource "aws_cloudwatch_event_target" "build" {
-  for_each = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+  for_each = { for entry in local.branches_deploy : "${entry.id}" => entry }
   rule     = aws_cloudwatch_event_rule.build["${each.value.id}"].name
   arn      = aws_codebuild_project.build["${each.value.id}"].arn
   role_arn  = aws_iam_role.cicd.arn
@@ -337,7 +340,7 @@ resource "aws_cloudwatch_event_target" "build" {
 
 # codebuild - build phase
 resource "aws_codebuild_project" "build" {
-  for_each      = { for entry in local.repositories_deploy : "${entry.id}" => entry }
+  for_each      = { for entry in local.branches_deploy : "${entry.id}" => entry }
   name          = "${local.project_uid}-${each.value.name}-build"
   description   = "${each.value.name} build execution environment"
   build_timeout = 5
@@ -361,10 +364,10 @@ resource "aws_codebuild_project" "build" {
   }
   source {
     type            = "CODECOMMIT"
-    location        = aws_codecommit_repository.this["${each.value.id}"].clone_url_http
+    location        = aws_codecommit_repository.this.clone_url_http
     git_clone_depth = 1
     buildspec       = "buildspec-build.yaml"
   }
-  source_version = "main"
+  source_version = "refs/heads/${each.value.id}"
 
 }
